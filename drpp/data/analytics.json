@@ -1,0 +1,40 @@
+{
+  "threatsByPlatform": {
+    "labels": [
+      "Instagram",
+      "X",
+      "Facebook",
+      "TikTok",
+      "Google Play",
+      "App Store"
+    ],
+    "counts": [
+      19,
+      14,
+      11,
+      9,
+      7,
+      5
+    ]
+  },
+  "velocityTrend7Days": {
+    "labels": [
+      "6d ago",
+      "5d ago",
+      "4d ago",
+      "3d ago",
+      "2d ago",
+      "Yesterday",
+      "Today"
+    ],
+    "volume": [
+      12,
+      18,
+      15,
+      23,
+      27,
+      31,
+      38
+    ]
+  }
+}

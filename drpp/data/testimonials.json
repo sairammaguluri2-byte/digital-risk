@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Marcus Vance",
+    "role": "Chief Information Security Officer",
+    "company": "Apex Global Financial",
+    "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+    "quote": "DoppelGuard eliminated 48 malicious lookalike apps in our first 30 days. Their automated takedowns protect millions in assets."
+  },
+  {
+    "name": "Elena Rostova",
+    "role": "VP of Brand Protection",
+    "company": "Solara Health Corporation",
+    "photo": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+    "quote": "Our brand team issues formal DMCA demands in minutes. Counterfeit scam profiles are removed before customer harm occurs."
+  },
+  {
+    "name": "David Chen",
+    "role": "Head of Digital Risk",
+    "company": "VaultPay Technologies",
+    "photo": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+    "quote": "Visual vector logo matching stopped predatory credential harvesters cold. It is essential defense for every consumer brand."
+  }
+]

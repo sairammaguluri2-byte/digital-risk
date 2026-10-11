@@ -1,0 +1,164 @@
+[
+  {
+    "id": "INC-84920",
+    "platform": "Instagram",
+    "targetBrand": "ApexPay Corporate",
+    "assetName": "@ApexPay_Official_Support",
+    "detectionType": "Fake Brand Account",
+    "riskScore": 96,
+    "status": "Active",
+    "detectedTimestamp": "Today, 18:04 UTC",
+    "realPhoto": "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=120&auto=format&fit=crop&q=80",
+    "evidence": {
+      "logoSimilarity": 94.2,
+      "accountAgeDays": 2,
+      "followerRatio": "Followers: 14 | Following: 4,120",
+      "flaggedStrings": [
+        "DM for immediate refund",
+        "Emergency wallet migration"
+      ],
+      "plainExplanation": "Scammer copied ApexPay's real logo and messages customers to steal payment credentials."
+    },
+    "aiRecommendation": {
+      "action": "Automated Platform Abuse API Impersonation Dispatch",
+      "channel": "Meta Brand Rights API",
+      "confidence": "97.8%",
+      "sla": "< 25 Minutes"
+    }
+  },
+  {
+    "id": "INC-84919",
+    "platform": "Google Play",
+    "targetBrand": "ApexPay Corporate",
+    "assetName": "com.apexpay.fastloan.apk (ApexPay Quick Loan)",
+    "detectionType": "Suspicious App",
+    "riskScore": 98,
+    "status": "Active",
+    "detectedTimestamp": "Today, 17:58 UTC",
+    "realPhoto": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120&auto=format&fit=crop&q=80",
+    "evidence": {
+      "logoSimilarity": 91.5,
+      "accountAgeDays": 5,
+      "followerRatio": "Downloads: 50+ | Unverified Keystore",
+      "flaggedStrings": [
+        "SMS verification required",
+        "Read contacts permission"
+      ],
+      "plainExplanation": "Rogue app posing as ApexPay secretly intercepting user text messages and address books."
+    },
+    "aiRecommendation": {
+      "action": "App Store Takedown & Rogue APK Hash Blacklist",
+      "channel": "Google Play Trust & Safety API",
+      "confidence": "99.4%",
+      "sla": "< 30 Minutes"
+    }
+  },
+  {
+    "id": "INC-84918",
+    "platform": "X",
+    "targetBrand": "ApexPay Corporate",
+    "assetName": "@ApexPay_Airdrop_VIP",
+    "detectionType": "Scam Account",
+    "riskScore": 89,
+    "status": "Active",
+    "detectedTimestamp": "Today, 17:41 UTC",
+    "realPhoto": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=120&auto=format&fit=crop&q=80",
+    "evidence": {
+      "logoSimilarity": 88,
+      "accountAgeDays": 1,
+      "followerRatio": "Followers: 32 | Following: 1,200",
+      "flaggedStrings": [
+        "Exclusive $500 bonus",
+        "Connect Web3 wallet"
+      ],
+      "plainExplanation": "Fake account posting under authentic brand tweets promoting phishing wallet drainers."
+    },
+    "aiRecommendation": {
+      "action": "Financial Fraud Quarantine & Cease & Desist Demand",
+      "channel": "X Impersonation Operations",
+      "confidence": "96.2%",
+      "sla": "< 40 Minutes"
+    }
+  },
+  {
+    "id": "INC-84917",
+    "platform": "TikTok",
+    "targetBrand": "ApexPay Corporate",
+    "assetName": "@apexpay_ceo_giveaway",
+    "detectionType": "Executive Impersonation",
+    "riskScore": 78,
+    "status": "Confirmed Threat",
+    "detectedTimestamp": "Today, 17:15 UTC",
+    "realPhoto": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80",
+    "evidence": {
+      "logoSimilarity": 74.5,
+      "accountAgeDays": 4,
+      "followerRatio": "Followers: 890 | Following: 12",
+      "flaggedStrings": [
+        "Executive profile",
+        "DM for grants"
+      ],
+      "plainExplanation": "Profile copying real executive headshots, funneling customers to illicit Telegram groups."
+    },
+    "aiRecommendation": {
+      "action": "Automated Platform Abuse API Impersonation Dispatch",
+      "channel": "TikTok Trust & Safety Portal",
+      "confidence": "97.8%",
+      "sla": "< 25 Minutes"
+    }
+  },
+  {
+    "id": "INC-84916",
+    "platform": "Facebook",
+    "targetBrand": "ApexPay Corporate",
+    "assetName": "ApexPay Customer Dispute Resolution",
+    "detectionType": "Phishing Link",
+    "riskScore": 92,
+    "status": "Under Takedown",
+    "detectedTimestamp": "Today, 16:30 UTC",
+    "realPhoto": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=120&auto=format&fit=crop&q=80",
+    "evidence": {
+      "logoSimilarity": 96.1,
+      "accountAgeDays": 8,
+      "followerRatio": "Sponsored Ad Spend Active",
+      "flaggedStrings": [
+        "Account suspension alert",
+        "Login immediately"
+      ],
+      "plainExplanation": "Sponsored ad directing customers to an unauthorized password harvesting login form."
+    },
+    "aiRecommendation": {
+      "action": "Emergency DNS Sinkhole & Registrar Domain Suspension",
+      "channel": "Cloudflare Abuse API & Registrar EPP Gateway",
+      "confidence": "98.7%",
+      "sla": "< 15 Minutes"
+    }
+  },
+  {
+    "id": "INC-84915",
+    "platform": "App Store",
+    "targetBrand": "ApexPay Corporate",
+    "assetName": "ApexPay Card Manager & Rewards",
+    "detectionType": "Suspicious App",
+    "riskScore": 84,
+    "status": "Active",
+    "detectedTimestamp": "Today, 15:45 UTC",
+    "realPhoto": "https://images.unsplash.com/photo-1614680376593-902f749f7ffc?w=120&auto=format&fit=crop&q=80",
+    "evidence": {
+      "logoSimilarity": 89.4,
+      "accountAgeDays": 14,
+      "followerRatio": "Ratings: 2.1 (7 reviews)",
+      "flaggedStrings": [
+        "Input card CVV and PIN",
+        "Third-party synchronizer"
+      ],
+      "plainExplanation": "Copycat utility tricking customers into inputting sensitive payment card PINs."
+    },
+    "aiRecommendation": {
+      "action": "App Store Takedown & Rogue APK Hash Blacklist",
+      "channel": "Apple Developer Relations Abuse",
+      "confidence": "99.4%",
+      "sla": "< 30 Minutes"
+    }
+  }
+]

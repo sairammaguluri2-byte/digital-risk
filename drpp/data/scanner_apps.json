@@ -1,0 +1,72 @@
+[
+  {
+    "name": "ApexPay Quick Loan (com.apexpay.fastloan.apk)",
+    "packageId": "com.apexpay.fastloan.apk",
+    "developer": "Apex Mobile Fintech LLC (Unverified)",
+    "verdict": "Malicious",
+    "score": 98,
+    "permissions": [
+      "RECEIVE_SMS",
+      "READ_CONTACTS",
+      "SYSTEM_ALERT_WINDOW"
+    ],
+    "plainText": "Pretends to offer cash loans, but secretly intercepts two-factor SMS authentication codes.",
+    "reasons": [
+      "Mimics brand trademark",
+      "Requests intrusive SMS permissions",
+      "Signed with disposable debug certificate"
+    ]
+  },
+  {
+    "name": "Crypto Claim Portal (io.cryptokite.claim.airdrop)",
+    "packageId": "io.cryptokite.claim.airdrop",
+    "developer": "Web3 Yield Distribution",
+    "verdict": "Malicious",
+    "score": 94,
+    "permissions": [
+      "INTERNET",
+      "READ_CLIPBOARD",
+      "ACCESSIBILITY_SERVICE"
+    ],
+    "plainText": "Watches phone clipboard memory to swap payment recipient addresses with hacker accounts.",
+    "reasons": [
+      "Hijacks clipboard data",
+      "Obfuscated payload found",
+      "Distributed outside official app stores"
+    ]
+  },
+  {
+    "name": "Solara Tracker (net.solara.health.unofficial)",
+    "packageId": "net.solara.health.unofficial",
+    "developer": "HealthFit OpenSource Dev",
+    "verdict": "Suspicious",
+    "score": 68,
+    "permissions": [
+      "ACCESS_FINE_LOCATION",
+      "BODY_SENSORS"
+    ],
+    "plainText": "Unofficial app using trademarked branding without corporate licensing agreement.",
+    "reasons": [
+      "Unlicensed trademark usage",
+      "Transmits analytics unencrypted",
+      "Developer uses disposable email"
+    ]
+  },
+  {
+    "name": "Official Authenticator (com.apexpay.security.auth)",
+    "packageId": "com.apexpay.security.auth",
+    "developer": "Apex Financial Corporation (Verified)",
+    "verdict": "Safe",
+    "score": 12,
+    "permissions": [
+      "USE_BIOMETRIC",
+      "VIBRATE"
+    ],
+    "plainText": "The genuine, official two-factor authentication app verified by corporate security.",
+    "reasons": [
+      "Cryptographically verified certificate",
+      "Zero intrusive permissions",
+      "Certified Play Protect signature"
+    ]
+  }
+]

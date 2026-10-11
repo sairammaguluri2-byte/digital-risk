@@ -1,0 +1,28 @@
+{
+  "script60Sec": [
+    "00:00 - The Problem: Scammers exploit trusted brands online using lookalike apps, fake executive accounts, and phishing links.",
+    "00:15 - AI Detection: DoppelGuard ingests live multi-modal telemetry across 6 global platforms, detecting infringements within 90 seconds.",
+    "00:30 - Explainability & Triage: Every threat is assigned a 0-100 risk score with transparent neural weights.",
+    "00:45 - Autonomous Remediation: One-click DMCA generation and direct platform API abuse integration.",
+    "00:55 - ROI & Value: Over $2.4M in brand equity defended and 90% reduction in SOC analyst triage fatigue."
+  ],
+  "businessTalkingPoints": [
+    {
+      "title": "Direct Customer Fraud Prevention",
+      "value": "Protects consumer trust by stopping credential harvesters before user damage occurs."
+    },
+    {
+      "title": "90% Reduction in SOC Labor",
+      "value": "Autonomous AI weighted scoring prioritizes true threats instantly, eliminating analyst fatigue."
+    },
+    {
+      "title": "Automated Statutory DMCA Enforcement",
+      "value": "Auto-assembles Section 512(c)(3) legal notices complete with vector evidence and cryptographic hashes."
+    }
+  ],
+  "thinkAboutAnswers": {
+    "q1_suspicious_signals": "Vector logo similarity (>85%), account velocity (<14 days), follower-to-following asymmetry, deceptive lexical triggers (DM password, urgent claim), and self-signed APK certificates.",
+    "q2_alert_management": "Prioritized triage queue, explainable confidence weights (5-second audit), and clear lifecycle status tracking (Confirmed, False Positive, Resolved).",
+    "q3_mvp_detection": "Fake social profiles, brand impersonation accounts, and rogue APK Android mobile apps."
+  }
+}

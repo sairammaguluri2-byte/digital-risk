@@ -1,0 +1,19 @@
+{
+  "name": "aegisbrand-ai-drp",
+  "version": "1.0.0",
+  "description": "AegisBrand AI: Digital Risk Protection Platform - Hackathon Demo",
+  "main": "index.html",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "cybersecurity",
+    "digital-risk-protection",
+    "hackathon",
+    "brand-impersonation-detection",
+    "ai"
+  ],
+  "author": "Fantastic Five",
+  "license": "MIT"
+}

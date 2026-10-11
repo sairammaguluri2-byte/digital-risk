@@ -1,0 +1,3192 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOPPELGUARD | Digital Risk Protection</title>
+  
+  <!-- Favicon: Luxury Antique Gold SVG Shield in Data URI -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C5A059' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3Cpath d='M9 12l2 2 4-4'/%3E%3C/svg%3E">
+
+  <!-- Strictly ONE Font Pair: Cinzel (Display) & Plus Jakarta Sans (Interface) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Cinzel', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+          colors: {
+            canvas: '#050608', // Pure Obsidian
+            surface: {
+              DEFAULT: '#0D0E12', // Dark Charcoal Card
+              raised: '#14161C',  // Elevated Card
+              border: '#22252E',  // Hairline Border
+            },
+            gold: {
+              DEFAULT: '#C5A059', // DoppelGuard Champagne Gold
+              light: '#E6CA85',   // Highlight Gold
+              dark: '#9A7A38',    // Deep Burnished Gold
+            },
+            text: {
+              primary: '#F8F6F0',   // Warm Ivory White
+              secondary: '#C2BCB0', // High-contrast warm tone (not faint gray)
+            },
+            risk: {
+              critical: '#B91C1C',
+              high: '#C2410C',
+              medium: '#B45309',
+              low: '#15803D',
+            }
+          },
+          borderRadius: {
+            DEFAULT: '4px',
+            sm: '2px',
+            md: '6px',
+            lg: '8px',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React 18 & Babel Standalone -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* Pure Obsidian Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #050608;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #22252E;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #C5A059;
+    }
+    .panel-border {
+      border: 1px solid rgba(197, 160, 89, 0.28) !important;
+    }
+    .table-row-hover:hover {
+      background-color: rgba(197, 160, 89, 0.10) !important;
+    }
+    /* Transparent Frosted Glass Across Every Page in Middle Background */
+    .bg-surface {
+      background-color: rgba(5, 6, 8, 0.35) !important;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(197, 160, 89, 0.25) !important;
+    }
+    .bg-surface-raised {
+      background-color: rgba(15, 17, 23, 0.40) !important;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .bg-canvas {
+      background-color: rgba(5, 6, 8, 0.30) !important;
+    }
+    header.bg-surface, header.bg-surface\/85 {
+      background-color: rgba(5, 6, 8, 0.45) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    footer.bg-surface {
+      background-color: rgba(5, 6, 8, 0.40) !important;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    input.bg-canvas, textarea.bg-canvas {
+      background-color: rgba(0, 0, 0, 0.40) !important;
+    }
+    /* Mobile Layout Compact Scaled Typography */
+    .mobile-layout-active {
+      font-size: 11px !important;
+    }
+    .mobile-layout-active h1 {
+      font-size: 1.15rem !important;
+      line-height: 1.3 !important;
+    }
+    .mobile-layout-active h2 {
+      font-size: 1.05rem !important;
+      line-height: 1.25 !important;
+    }
+    .mobile-layout-active h3 {
+      font-size: 0.95rem !important;
+      line-height: 1.2 !important;
+    }
+    .mobile-layout-active p {
+      font-size: 11px !important;
+      line-height: 1.4 !important;
+    }
+    .mobile-layout-active button {
+      font-size: 11px !important;
+    }
+    .mobile-layout-active input, .mobile-layout-active textarea {
+      font-size: 11px !important;
+    }
+  </style>
+</head>
+<body class="bg-canvas text-text-primary font-sans antialiased min-h-screen selection:bg-gold selection:text-black">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo } = React;
+
+    // --- UNIFIED SINGLE ICONSET (1.75px stroke width throughout) ---
+    const IconShield = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
+      </svg>
+    );
+
+    const IconArrowLeft = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+    );
+
+    const IconGlobe = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <circle cx="12" cy="12" r="10" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+      </svg>
+    );
+
+    const IconTerminal = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 17l6-6-6-6m8 14h8" />
+      </svg>
+    );
+
+    const IconSearch = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <circle cx="11" cy="11" r="8" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35" />
+      </svg>
+    );
+
+    const IconCheck = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+    );
+
+    const IconX = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    );
+
+    const IconMenu = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    );
+
+    const IconFileText = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    );
+
+    const IconCopy = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      </svg>
+    );
+
+    const IconPlus = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+      </svg>
+    );
+
+    const IconUser = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+    );
+
+    const IconLock = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0110 0v4" />
+      </svg>
+    );
+
+    const IconSmartphone = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+        <path d="M12 18h.01" />
+      </svg>
+    );
+
+    const IconBarChart = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    );
+
+    const IconHelpCircle = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <circle cx="12" cy="12" r="10" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3m.08 4h.01" />
+      </svg>
+    );
+
+    const IconZap = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    );
+
+    const IconCpu = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75">
+        <rect x="4" y="4" width="16" height="16" rx="2" />
+        <rect x="9" y="9" width="6" height="6" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" />
+      </svg>
+    );
+
+    const IconChevronDown = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    );
+
+    const IconChevronUp = ({ className = "w-4 h-4" }) => (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+      </svg>
+    );
+
+    // Platform Badge
+    const PlatformBadge = ({ platform }) => (
+      <span className="font-sans text-[11px] font-semibold px-2 py-0.5 rounded bg-surface-raised text-text-secondary border border-surface-border">
+        {platform}
+      </span>
+    );
+
+    // --- REAL TESTIMONIALS DATA ---
+    const TESTIMONIALS = [
+      {
+        name: "Marcus Vance",
+        role: "Chief Information Security Officer",
+        company: "Apex Global Financial",
+        photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+        quote: "DoppelGuard eliminated 48 malicious lookalike apps in our first 30 days. Their automated takedowns protect millions in assets."
+      },
+      {
+        name: "Elena Rostova",
+        role: "VP of Brand Protection",
+        company: "Solara Health Corporation",
+        photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+        quote: "Our brand team issues formal DMCA demands in minutes. Counterfeit scam profiles are removed before customer harm occurs."
+      },
+      {
+        name: "David Chen",
+        role: "Head of Digital Risk",
+        company: "VaultPay Technologies",
+        photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+        quote: "Visual vector logo matching stopped predatory credential harvesters cold. It is essential defense for every consumer brand."
+      }
+    ];
+
+    // --- REAL-WORLD INCIDENT DATA ---
+    const INITIAL_INCIDENTS = [
+      {
+        id: "INC-84920",
+        platform: "Instagram",
+        targetBrand: "ApexPay Corporate",
+        assetName: "@ApexPay_Official_Support",
+        detectionType: "Fake Brand Account",
+        riskScore: 96,
+        status: "Active",
+        detectedTimestamp: "Today, 18:04 UTC",
+        realPhoto: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=120&auto=format&fit=crop&q=80",
+        evidence: {
+          logoSimilarity: 94.2,
+          accountAgeDays: 2,
+          followerRatio: "Followers: 14 | Following: 4,120",
+          flaggedStrings: ["DM for immediate refund", "Emergency wallet migration"],
+          plainExplanation: "Scammer copied ApexPay's real logo and messages customers to steal payment credentials."
+        }
+      },
+      {
+        id: "INC-84919",
+        platform: "Google Play",
+        targetBrand: "ApexPay Corporate",
+        assetName: "com.apexpay.fastloan.apk (ApexPay Quick Loan)",
+        detectionType: "Suspicious App",
+        riskScore: 98,
+        status: "Active",
+        detectedTimestamp: "Today, 17:58 UTC",
+        realPhoto: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120&auto=format&fit=crop&q=80",
+        evidence: {
+          logoSimilarity: 91.5,
+          accountAgeDays: 5,
+          followerRatio: "Downloads: 50+ | Unverified Keystore",
+          flaggedStrings: ["SMS verification required", "Read contacts permission"],
+          plainExplanation: "Rogue app posing as ApexPay secretly intercepting user text messages and address books."
+        }
+      },
+      {
+        id: "INC-84918",
+        platform: "X",
+        targetBrand: "ApexPay Corporate",
+        assetName: "@ApexPay_Airdrop_VIP",
+        detectionType: "Scam Account",
+        riskScore: 89,
+        status: "Active",
+        detectedTimestamp: "Today, 17:41 UTC",
+        realPhoto: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=120&auto=format&fit=crop&q=80",
+        evidence: {
+          logoSimilarity: 88.0,
+          accountAgeDays: 1,
+          followerRatio: "Followers: 32 | Following: 1,200",
+          flaggedStrings: ["Exclusive $500 bonus", "Connect Web3 wallet"],
+          plainExplanation: "Fake account posting under authentic brand tweets promoting phishing wallet drainers."
+        }
+      },
+      {
+        id: "INC-84917",
+        platform: "TikTok",
+        targetBrand: "ApexPay Corporate",
+        assetName: "@apexpay_ceo_giveaway",
+        detectionType: "Executive Impersonation",
+        riskScore: 78,
+        status: "Confirmed Threat",
+        detectedTimestamp: "Today, 17:15 UTC",
+        realPhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80",
+        evidence: {
+          logoSimilarity: 74.5,
+          accountAgeDays: 4,
+          followerRatio: "Followers: 890 | Following: 12",
+          flaggedStrings: ["Executive profile", "DM for grants"],
+          plainExplanation: "Profile copying real executive headshots, funneling customers to illicit Telegram groups."
+        }
+      },
+      {
+        id: "INC-84916",
+        platform: "Facebook",
+        targetBrand: "ApexPay Corporate",
+        assetName: "ApexPay Customer Dispute Resolution",
+        detectionType: "Phishing Link",
+        riskScore: 92,
+        status: "Under Takedown",
+        detectedTimestamp: "Today, 16:30 UTC",
+        realPhoto: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=120&auto=format&fit=crop&q=80",
+        evidence: {
+          logoSimilarity: 96.1,
+          accountAgeDays: 8,
+          followerRatio: "Sponsored Ad Spend Active",
+          flaggedStrings: ["Account suspension alert", "Login immediately"],
+          plainExplanation: "Sponsored ad directing customers to an unauthorized password harvesting login form."
+        }
+      },
+      {
+        id: "INC-84915",
+        platform: "App Store",
+        targetBrand: "ApexPay Corporate",
+        assetName: "ApexPay Card Manager & Rewards",
+        detectionType: "Suspicious App",
+        riskScore: 84,
+        status: "Active",
+        detectedTimestamp: "Today, 15:45 UTC",
+        realPhoto: "https://images.unsplash.com/photo-1614680376593-902f749f7ffc?w=120&auto=format&fit=crop&q=80",
+        evidence: {
+          logoSimilarity: 89.4,
+          accountAgeDays: 14,
+          followerRatio: "Ratings: 2.1 (7 reviews)",
+          flaggedStrings: ["Input card CVV and PIN", "Third-party synchronizer"],
+          plainExplanation: "Copycat utility tricking customers into inputting sensitive payment card PINs."
+        }
+      }
+    ];
+
+    // Sample Apps for Scanner
+    const TEST_APPLICATIONS = [
+      {
+        name: "ApexPay Quick Loan (com.apexpay.fastloan.apk)",
+        packageId: "com.apexpay.fastloan.apk",
+        developer: "Apex Mobile Fintech LLC (Unverified)",
+        verdict: "Malicious",
+        score: 98,
+        permissions: ["RECEIVE_SMS", "READ_CONTACTS", "SYSTEM_ALERT_WINDOW"],
+        plainText: "Pretends to offer cash loans, but secretly intercepts two-factor SMS authentication codes.",
+        reasons: ["Mimics brand trademark", "Requests intrusive SMS permissions", "Signed with disposable debug certificate"]
+      },
+      {
+        name: "Crypto Claim Portal (io.cryptokite.claim.airdrop)",
+        packageId: "io.cryptokite.claim.airdrop",
+        developer: "Web3 Yield Distribution",
+        verdict: "Malicious",
+        score: 94,
+        permissions: ["INTERNET", "READ_CLIPBOARD", "ACCESSIBILITY_SERVICE"],
+        plainText: "Watches phone clipboard memory to swap payment recipient addresses with hacker accounts.",
+        reasons: ["Hijacks clipboard data", "Obfuscated payload found", "Distributed outside official app stores"]
+      },
+      {
+        name: "Solara Tracker (net.solara.health.unofficial)",
+        packageId: "net.solara.health.unofficial",
+        developer: "HealthFit OpenSource Dev",
+        verdict: "Suspicious",
+        score: 68,
+        permissions: ["ACCESS_FINE_LOCATION", "BODY_SENSORS"],
+        plainText: "Unofficial app using trademarked branding without corporate licensing agreement.",
+        reasons: ["Unlicensed trademark usage", "Transmits analytics unencrypted", "Developer uses disposable email"]
+      },
+      {
+        name: "Official Authenticator (com.apexpay.security.auth)",
+        packageId: "com.apexpay.security.auth",
+        developer: "Apex Financial Corporation (Verified)",
+        verdict: "Safe",
+        score: 12,
+        permissions: ["USE_BIOMETRIC", "VIBRATE"],
+        plainText: "The genuine, official two-factor authentication app verified by corporate security.",
+        reasons: ["Cryptographically verified certificate", "Zero intrusive permissions", "Certified Play Protect signature"]
+      }
+    ];
+
+    // --- LUXURY BRAND BACKGROUND ANIMATION CANVAS (RUNS ACROSS ENTIRE APP) ---
+    const BrandBackgroundCanvas = () => {
+      const canvasRef = useRef(null);
+
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let animId;
+        let width = (canvas.width = window.innerWidth);
+        let height = (canvas.height = window.innerHeight);
+
+        const handleResize = () => {
+          if (!canvas) return;
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        };
+        window.addEventListener('resize', handleResize);
+
+        // Smooth mouse parallax coordinates
+        let mouseX = width / 2;
+        let mouseY = height / 2;
+        let targetMouseX = width / 2;
+        let targetMouseY = height / 2;
+
+        const handleMouseMove = (e) => {
+          targetMouseX = e.clientX;
+          targetMouseY = e.clientY;
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+
+        // 55 Golden cyber defense network nodes
+        const nodeCount = 55;
+        const nodes = [];
+        for (let i = 0; i < nodeCount; i++) {
+          nodes.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.45,
+            vy: (Math.random() - 0.5) * 0.45,
+            radius: Math.random() * 1.6 + 0.8,
+            baseAlpha: Math.random() * 0.4 + 0.25,
+            pulseSpeed: Math.random() * 0.02 + 0.01,
+            phase: Math.random() * Math.PI * 2
+          });
+        }
+
+        // Preload brand logo for middle background advertisement
+        const logoImg = new Image();
+        logoImg.src = './doppelguard-logo.jpg';
+        let logoLoaded = false;
+        logoImg.onload = () => { logoLoaded = true; };
+
+        let rotationAngle = 0;
+        let radarAngle = 0;
+        let pulsePhase = 0;
+
+        const render = () => {
+          // Smooth parallax damping
+          mouseX += (targetMouseX - mouseX) * 0.05;
+          mouseY += (targetMouseY - mouseY) * 0.05;
+          const parallaxX = (mouseX - width / 2) * 0.04;
+          const parallaxY = (mouseY - height / 2) * 0.04;
+
+          // Clear with pure obsidian background
+          ctx.fillStyle = '#050608';
+          ctx.fillRect(0, 0, width, height);
+
+          const cx = width / 2 + parallaxX;
+          const cy = height / 2 + parallaxY;
+          const maxDim = Math.max(width, height);
+
+          // 1. Ambient luxury radial gold warmth in middle background
+          const ambientGlow = ctx.createRadialGradient(cx, cy, 30, cx, cy, maxDim * 0.65);
+          ambientGlow.addColorStop(0, 'rgba(197, 160, 89, 0.22)');
+          ambientGlow.addColorStop(0.35, 'rgba(197, 160, 89, 0.08)');
+          ambientGlow.addColorStop(0.75, 'rgba(5, 6, 8, 0)');
+          ctx.fillStyle = ambientGlow;
+          ctx.fillRect(0, 0, width, height);
+
+          // 2. Official Brand Advertisement / Insignia in Middle Background
+          pulsePhase += 0.025;
+          if (logoLoaded) {
+            ctx.save();
+            ctx.translate(cx, cy);
+            const logoBreath = Math.sin(pulsePhase * 0.7) * 0.1;
+            ctx.globalAlpha = 0.52 + logoBreath;
+            const logoW = Math.min(width, height) * 0.34;
+            const logoH = logoW * (logoImg.height / logoImg.width || 0.85);
+            ctx.shadowColor = '#C5A059';
+            ctx.shadowBlur = 28;
+            ctx.drawImage(logoImg, -logoW / 2, -logoH / 2, logoW, logoH);
+            ctx.restore();
+          }
+
+          // 3. Slow tactical radar scan beam
+          radarAngle += 0.008;
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate(radarAngle);
+          const sweepGrad = ctx.createRadialGradient(0, 0, 10, 0, 0, 400);
+          sweepGrad.addColorStop(0, 'rgba(230, 202, 133, 0.22)');
+          sweepGrad.addColorStop(0.4, 'rgba(197, 160, 89, 0.06)');
+          sweepGrad.addColorStop(1, 'rgba(197, 160, 89, 0)');
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.arc(0, 0, 400, 0, Math.PI / 2.8);
+          ctx.closePath();
+          ctx.fillStyle = sweepGrad;
+          ctx.fill();
+          ctx.restore();
+
+          // 4. Central Glowing Brand Shield Wireframe & Defensive Perimeter
+          rotationAngle += 0.0018;
+          const shieldRadius = Math.min(width, height) * 0.24;
+          const breathing = Math.sin(pulsePhase) * 5;
+          const curRadius = shieldRadius + breathing;
+
+          ctx.save();
+          ctx.translate(cx, cy);
+
+          // Outer calibrated compass / radar ring
+          ctx.strokeStyle = 'rgba(197, 160, 89, 0.45)';
+          ctx.lineWidth = 1.2;
+          ctx.setLineDash([4, 8]);
+          ctx.beginPath();
+          ctx.arc(0, 0, curRadius * 1.48, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Cardinal degree markers on outer ring
+          const ticks = 36;
+          for (let i = 0; i < ticks; i++) {
+            const a = (i * Math.PI * 2) / ticks;
+            const rInner = curRadius * 1.44;
+            const rOuter = i % 9 === 0 ? curRadius * 1.55 : curRadius * 1.48;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(a) * rInner, Math.sin(a) * rInner);
+            ctx.lineTo(Math.cos(a) * rOuter, Math.sin(a) * rOuter);
+            ctx.strokeStyle = i % 9 === 0 ? 'rgba(230, 202, 133, 0.9)' : 'rgba(197, 160, 89, 0.45)';
+            ctx.lineWidth = i % 9 === 0 ? 1.5 : 1;
+            ctx.stroke();
+          }
+
+          // Orbiting sentinel satellites
+          const sat1Angle = -rotationAngle * 2.4;
+          const sat2Angle = rotationAngle * 1.8 + Math.PI;
+          const sat3Angle = -rotationAngle * 1.2 + Math.PI / 2;
+
+          const drawSatellite = (angle, dist, r, glow) => {
+            const sx = Math.cos(angle) * dist;
+            const sy = Math.sin(angle) * dist;
+            ctx.beginPath();
+            ctx.arc(sx, sy, r, 0, Math.PI * 2);
+            ctx.fillStyle = '#E6CA85';
+            ctx.shadowColor = '#C5A059';
+            ctx.shadowBlur = glow;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          };
+          drawSatellite(sat1Angle, curRadius * 1.48, 3.0, 12);
+          drawSatellite(sat2Angle, curRadius * 1.26, 2.2, 8);
+          drawSatellite(sat3Angle, curRadius * 1.68, 2.0, 6);
+
+          // Subtle gentle oscillation for the shield wireframe
+          ctx.rotate(Math.sin(rotationAngle * 0.8) * 0.08);
+
+          const drawShieldPath = (r) => {
+            ctx.beginPath();
+            ctx.moveTo(0, -r);
+            ctx.lineTo(r * 0.78, -r * 0.65);
+            ctx.lineTo(r * 0.78, r * 0.15);
+            ctx.quadraticCurveTo(r * 0.7, r * 0.6, 0, r * 0.95);
+            ctx.quadraticCurveTo(-r * 0.7, r * 0.6, -r * 0.78, r * 0.15);
+            ctx.lineTo(-r * 0.78, -r * 0.65);
+            ctx.closePath();
+          };
+
+          // Outer shield outline with rich gold glow
+          drawShieldPath(curRadius);
+          ctx.strokeStyle = 'rgba(230, 202, 133, 0.85)';
+          ctx.lineWidth = 1.8;
+          ctx.shadowColor = '#C5A059';
+          ctx.shadowBlur = 18;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+
+          // Inner shield outline
+          drawShieldPath(curRadius * 0.72);
+          ctx.strokeStyle = 'rgba(230, 202, 133, 0.45)';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+
+          // Inner monogram / faceted structural lines
+          ctx.beginPath();
+          ctx.moveTo(0, -curRadius);
+          ctx.lineTo(0, curRadius * 0.95);
+          ctx.moveTo(-curRadius * 0.78, -curRadius * 0.65);
+          ctx.lineTo(curRadius * 0.78, curRadius * 0.15);
+          ctx.moveTo(curRadius * 0.78, -curRadius * 0.65);
+          ctx.lineTo(-curRadius * 0.78, curRadius * 0.15);
+          ctx.strokeStyle = 'rgba(197, 160, 89, 0.35)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          ctx.restore();
+
+          // 4. Digital Risk Constellation (nodes & proximity defense lines)
+          for (let i = 0; i < nodes.length; i++) {
+            const p = nodes[i];
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // Screen wrap-around
+            if (p.x < 0) p.x = width;
+            if (p.x > width) p.x = 0;
+            if (p.y < 0) p.y = height;
+            if (p.y > height) p.y = 0;
+
+            p.phase += p.pulseSpeed;
+            const currentAlpha = p.baseAlpha + Math.sin(p.phase) * 0.15;
+
+            // Draw node
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(230, 202, 133, ${Math.max(0.1, currentAlpha)})`;
+            ctx.fill();
+
+            // Connect nearby nodes
+            for (let j = i + 1; j < nodes.length; j++) {
+              const p2 = nodes[j];
+              const dx = p.x - p2.x;
+              const dy = p.y - p2.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+
+              if (dist < 115) {
+                const lineAlpha = (1 - dist / 115) * 0.22;
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.strokeStyle = `rgba(197, 160, 89, ${lineAlpha})`;
+                ctx.lineWidth = 0.75;
+                ctx.stroke();
+              }
+            }
+          }
+
+          animId = requestAnimationFrame(render);
+        };
+
+        render();
+
+        return () => {
+          cancelAnimationFrame(animId);
+          window.removeEventListener('resize', handleResize);
+          window.removeEventListener('mousemove', handleMouseMove);
+        };
+      }, []);
+
+      return (
+        <canvas
+          ref={canvasRef}
+          className="fixed inset-0 pointer-events-none z-0 w-full h-full"
+        />
+      );
+    };
+
+    const BrandLoginCanvas = BrandBackgroundCanvas;
+
+    // --- EXECUTIVE ANALYTICS: DUAL CHART.JS COMPONENT ---
+    const AnalyticsCharts = ({ isMobileLayout }) => {
+      const platformChartRef = useRef(null);
+      const trendChartRef = useRef(null);
+      const platformChartInstance = useRef(null);
+      const trendChartInstance = useRef(null);
+
+      useEffect(() => {
+        if (typeof Chart === 'undefined') return;
+
+        // 1. Threats by Platform (Bar Chart)
+        if (platformChartRef.current) {
+          if (platformChartInstance.current) {
+            platformChartInstance.current.destroy();
+          }
+          const ctx1 = platformChartRef.current.getContext('2d');
+          platformChartInstance.current = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+              labels: ['Instagram', 'X', 'Facebook', 'TikTok', 'Google Play', 'App Store'],
+              datasets: [{
+                label: 'Threats Detected',
+                data: [19, 14, 11, 9, 7, 5],
+                backgroundColor: 'rgba(197, 160, 89, 0.75)',
+                hoverBackgroundColor: 'rgba(230, 202, 133, 0.95)',
+                borderColor: '#C5A059',
+                borderWidth: 1,
+                borderRadius: 3,
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: '#0D0E12',
+                  borderColor: '#C5A059',
+                  borderWidth: 1,
+                  titleColor: '#F8F6F0',
+                  bodyColor: '#C2BCB0',
+                  padding: 8,
+                  displayColors: false,
+                }
+              },
+              scales: {
+                x: {
+                  grid: { color: 'rgba(197, 160, 89, 0.08)' },
+                  ticks: { color: '#C2BCB0', font: { family: "'Plus Jakarta Sans', sans-serif", size: 10 } }
+                },
+                y: {
+                  grid: { color: 'rgba(197, 160, 89, 0.08)' },
+                  ticks: { color: '#C2BCB0', font: { family: "'Plus Jakarta Sans', sans-serif", size: 10 }, stepSize: 5 },
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        }
+
+        // 2. 7-Day Velocity Trend (Line Chart)
+        if (trendChartRef.current) {
+          if (trendChartInstance.current) {
+            trendChartInstance.current.destroy();
+          }
+          const ctx2 = trendChartRef.current.getContext('2d');
+          const gradient = ctx2.createLinearGradient(0, 0, 0, 160);
+          gradient.addColorStop(0, 'rgba(197, 160, 89, 0.40)');
+          gradient.addColorStop(1, 'rgba(197, 160, 89, 0.02)');
+
+          trendChartInstance.current = new Chart(ctx2, {
+            type: 'line',
+            data: {
+              labels: ['6d ago', '5d ago', '4d ago', '3d ago', '2d ago', 'Yesterday', 'Today'],
+              datasets: [{
+                label: 'Threat Ingestion Volume',
+                data: [12, 18, 15, 23, 27, 31, 38],
+                borderColor: '#E6CA85',
+                backgroundColor: gradient,
+                borderWidth: 2,
+                pointBackgroundColor: '#C5A059',
+                pointBorderColor: '#050608',
+                pointHoverBackgroundColor: '#FFFFFF',
+                pointRadius: 3,
+                tension: 0.35,
+                fill: true
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: '#0D0E12',
+                  borderColor: '#C5A059',
+                  borderWidth: 1,
+                  titleColor: '#F8F6F0',
+                  bodyColor: '#C2BCB0',
+                  padding: 8,
+                  displayColors: false,
+                }
+              },
+              scales: {
+                x: {
+                  grid: { color: 'rgba(197, 160, 89, 0.08)' },
+                  ticks: { color: '#C2BCB0', font: { family: "'Plus Jakarta Sans', sans-serif", size: 10 } }
+                },
+                y: {
+                  grid: { color: 'rgba(197, 160, 89, 0.08)' },
+                  ticks: { color: '#C2BCB0', font: { family: "'Plus Jakarta Sans', sans-serif", size: 10 }, stepSize: 10 },
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        }
+
+        return () => {
+          if (platformChartInstance.current) platformChartInstance.current.destroy();
+          if (trendChartInstance.current) trendChartInstance.current.destroy();
+        };
+      }, [isMobileLayout]);
+
+      return (
+        <div className={`bg-surface panel-border ${isMobileLayout ? 'p-3 space-y-3' : 'p-6 space-y-4'} rounded-lg`}>
+          <div className="flex items-center justify-between border-b border-surface-border pb-3">
+            <div>
+              <span className="text-[10px] font-sans font-semibold text-gold uppercase tracking-wider block">
+                Executive Analytics & Platform Telemetry
+              </span>
+              <h3 className={`${isMobileLayout ? 'text-sm' : 'text-lg'} font-serif font-bold text-white`}>
+                Threat Distribution & 7-Day Velocity Trend
+              </h3>
+            </div>
+            <span className="text-[10px] font-mono text-emerald-400 bg-risk-low/20 px-2 py-0.5 rounded border border-risk-low/40">
+              Telemetry Ingestion: Active
+            </span>
+          </div>
+
+          <div className={`grid ${isMobileLayout ? 'grid-cols-1 gap-4' : 'grid-cols-1 lg:grid-cols-2 gap-6'}`}>
+            <div className="p-3 bg-canvas border border-surface-border rounded-lg space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-white">Threats by Platform (Cross-Network Bar)</span>
+                <span className="text-[10px] text-text-secondary">6 Platforms</span>
+              </div>
+              <div className="relative h-44 w-full">
+                <canvas ref={platformChartRef}></canvas>
+              </div>
+            </div>
+
+            <div className="p-3 bg-canvas border border-surface-border rounded-lg space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-white">Activity Velocity (Last 7 Days Line)</span>
+                <span className="text-[10px] text-text-secondary">+216% Growth</span>
+              </div>
+              <div className="relative h-44 w-full">
+                <canvas ref={trendChartRef}></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // --- JUDGE DEMO SCRIPT & PITCH PACK MODAL ---
+    const PitchPackModal = ({ isOpen, onClose }) => {
+      const [pitchTab, setPitchTab] = useState('script');
+
+      if (!isOpen) return null;
+
+      return (
+        <div onClick={(e) => { if (e.target === e.currentTarget) onClose(); }} className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+          <div className="bg-surface panel-border max-w-3xl w-full rounded-xl shadow-2xl p-6 sm:p-8 space-y-5 max-h-[92vh] overflow-y-auto border border-gold/40">
+            
+            {/* Header */}
+            <div className="flex items-start justify-between pb-3 border-b border-surface-border">
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="px-2 py-0.5 rounded bg-gold/20 text-gold text-[10px] font-bold uppercase tracking-wider border border-gold/40">
+                    Hackathon Evaluation Aid
+                  </span>
+                  <span className="text-xs text-text-secondary">DoppelGuard DRP</span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-white mt-1">
+                  Judge Demo Script & Pitch Pack
+                </h2>
+                <p className="text-xs text-text-secondary">
+                  Complete 60-second walkthrough, brand value drivers, explicit Think About answers, and roadmap.
+                </p>
+              </div>
+              <button 
+                onClick={onClose} 
+                className="text-text-secondary hover:text-white p-1 rounded hover:bg-canvas transition-colors cursor-pointer"
+              >
+                <IconX className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Navigation Tabs */}
+            <div className="flex flex-wrap gap-1.5 border-b border-surface-border pb-3">
+              {[
+                { id: 'script', label: '1. 60-Second Demo Script' },
+                { id: 'points', label: '2. 3 Brand Value Talking Points' },
+                { id: 'thinkAbout', label: '3. Answers to Think About' },
+                { id: 'future', label: '4. Future Scope & Roadmap' },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setPitchTab(tab.id)}
+                  className={`px-3 py-1.5 rounded text-xs font-semibold transition-all cursor-pointer ${
+                    pitchTab === tab.id
+                      ? 'bg-gold text-black font-bold'
+                      : 'bg-canvas text-text-secondary hover:text-white border border-surface-border'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* TAB 1: 60-SECOND DEMO SCRIPT */}
+            {pitchTab === 'script' && (
+              <div className="space-y-4 text-xs">
+                <div className="p-3 bg-canvas border border-surface-border rounded-lg space-y-1">
+                  <span className="text-gold font-bold uppercase text-[10px] block">Demo Objective</span>
+                  <p className="text-text-secondary">
+                    Demonstrate to judges how DoppelGuard stops brand impersonation in under 60 seconds with zero-setup browser speed.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="p-3.5 bg-canvas border-l-2 border-gold rounded space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-white">0:00 - 0:15 | The Enterprise Crisis</span>
+                      <span className="text-[10px] text-gold font-mono">Step 1</span>
+                    </div>
+                    <p className="text-text-secondary leading-relaxed">
+                      "Every enterprise faces an epidemic of counterfeit social accounts and lookalike apps designed to deceive customers. DoppelGuard is an AI-powered Digital Risk Protection platform that monitors platforms 24/7 to catch and remove impersonators before customer trust is compromised."
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 bg-canvas border-l-2 border-gold rounded space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-white">0:15 - 0:30 | Real-Time Live Discovery</span>
+                      <span className="text-[10px] text-gold font-mono">Step 2</span>
+                    </div>
+                    <p className="text-text-secondary leading-relaxed">
+                      "Watch our live feed: in real time, autonomous surveillance ingests threats across Instagram, X, TikTok, Facebook, and mobile app stores. We calculate an explainable 0-100 risk score with calibrated severity ratings."
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 bg-canvas border-l-2 border-gold rounded space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-white">0:30 - 0:45 | Explainable AI & App Scanner</span>
+                      <span className="text-[10px] text-gold font-mono">Step 3</span>
+                    </div>
+                    <p className="text-text-secondary leading-relaxed">
+                      "Clicking any threat reveals our explainability dossier: 35% vector logo similarity, 25% account velocity, follower ratios, and flagged phishing keywords. In our App Scanner, enter an APK identifier to decompile permissions with an instant Safe, Suspicious, or Malicious verdict."
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 bg-canvas border-l-2 border-gold rounded space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-white">0:45 - 1:00 | 1-Click Remediation & Takedown</span>
+                      <span className="text-[10px] text-gold font-mono">Step 4</span>
+                    </div>
+                    <p className="text-text-secondary leading-relaxed">
+                      "In our Triage Center, teams confirm threats, dismiss false positives, and generate statutory DMCA legal removal demands in one click, achieving a 99.4% platform removal rate."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 2: THREE BUSINESS-VALUE TALKING POINTS */}
+            {pitchTab === 'points' && (
+              <div className="space-y-3.5 text-xs">
+                <div className="p-4 bg-canvas border border-surface-border rounded-lg space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-5 h-5 rounded bg-gold/20 text-gold flex items-center justify-center font-bold text-xs">1</span>
+                    <h4 className="font-serif font-bold text-white text-sm">Zero-Day Fraud & Revenue Preservation</h4>
+                  </div>
+                  <p className="text-text-secondary leading-relaxed pl-7">
+                    Customer impersonation scams cause massive financial chargebacks, customer churn, and trademark dilution. DoppelGuard neutralizes scams within hours rather than weeks, preventing multimillion-dollar reputational loss.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-canvas border border-surface-border rounded-lg space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-5 h-5 rounded bg-gold/20 text-gold flex items-center justify-center font-bold text-xs">2</span>
+                    <h4 className="font-serif font-bold text-white text-sm">90% Reduction in Security Operations Labor</h4>
+                  </div>
+                  <p className="text-text-secondary leading-relaxed pl-7">
+                    Manual scouring across six global networks is tedious and prone to human error. Autonomous AI weighted scoring and automated clustering prioritize true threats instantly, eliminating analyst fatigue.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-canvas border border-surface-border rounded-lg space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-5 h-5 rounded bg-gold/20 text-gold flex items-center justify-center font-bold text-xs">3</span>
+                    <h4 className="font-serif font-bold text-white text-sm">Automated Statutory DMCA Enforcement</h4>
+                  </div>
+                  <p className="text-text-secondary leading-relaxed pl-7">
+                    Platform abuse desks reject informal complaints. DoppelGuard auto-assembles formal Section 512(c)(3) legal notices complete with vector evidence and cryptographic hashes for expedited platform takedowns.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: ANSWERS TO THE THREE THINK ABOUT QUESTIONS */}
+            {pitchTab === 'thinkAbout' && (
+              <div className="space-y-3.5 text-xs">
+                <div className="p-4 bg-canvas border border-surface-border rounded-lg space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gold font-bold uppercase text-[10px]">Think About Question 1</span>
+                    <span className="text-[10px] text-text-secondary font-mono">Detection Signals</span>
+                  </div>
+                  <h4 className="font-bold text-white text-sm">What signals make an account look suspicious?</h4>
+                  <p className="text-text-secondary leading-relaxed">
+                    1. <strong>Vector Logo Similarity:</strong> High cosine similarity (&gt;85%) against registered trademark vectors.<br/>
+                    2. <strong>Account Velocity & Age:</strong> Brand-new profiles (&lt;14 days old) impersonating long-established brands.<br/>
+                    3. <strong>Follower-to-Following Asymmetry:</strong> e.g. Following 3,000+ accounts with only 12 followers (credential harvester signature).<br/>
+                    4. <strong>Deceptive Lexical Triggers:</strong> High-risk keywords such as "DM password", "airdrop claim", "urgent account restore".<br/>
+                    5. <strong>Unverified Mobile Signatures:</strong> Self-signed APK certificates and requests for dangerous SMS/contact permissions.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-canvas border border-surface-border rounded-lg space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gold font-bold uppercase text-[10px]">Think About Question 2</span>
+                    <span className="text-[10px] text-text-secondary font-mono">Alert Management</span>
+                  </div>
+                  <h4 className="font-bold text-white text-sm">How should brands see alerts without alert fatigue?</h4>
+                  <p className="text-text-secondary leading-relaxed">
+                    1. <strong>Prioritized Triage Inbox:</strong> Threats are classified into Critical, High, and Medium. Only Critical (85+) triggers high-priority notifications.<br/>
+                    2. <strong>Explainable Confidence Weights:</strong> Analysts see exactly why an alert fired in 5 seconds (weights, match percentages, text matches).<br/>
+                    3. <strong>Live Status Counters & Lifecycle Actions:</strong> Clear state tracking (Confirmed Threat, False Positive, Resolved) keeps the active queue clean and actionable.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-canvas border border-surface-border rounded-lg space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gold font-bold uppercase text-[10px]">Think About Question 3</span>
+                    <span className="text-[10px] text-text-secondary font-mono">MVP Scope</span>
+                  </div>
+                  <h4 className="font-bold text-white text-sm">What should the MVP detect first?</h4>
+                  <p className="text-text-secondary leading-relaxed">
+                    The MVP focuses directly on <strong>Fake Profiles and Brand Impersonation Accounts</strong> on the most active social networks (Instagram, X, TikTok, Facebook), paired with <strong>Rogue APK Mobile Apps</strong> on Android stores. These represent over 80% of consumer-facing digital fraud and deliver the highest immediate ROI for enterprise brand protection.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 4: FUTURE SCOPE (PITCH ONLY) */}
+            {pitchTab === 'future' && (
+              <div className="space-y-3.5 text-xs">
+                <div className="p-3 bg-canvas border border-surface-border rounded-lg space-y-1">
+                  <span className="text-gold font-bold uppercase text-[10px] block">Evaluation Note</span>
+                  <p className="text-text-secondary">
+                    Mention these high-impact roadmap expansions during your live pitch to demonstrate long-term commercial scalability.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="p-3.5 bg-canvas border border-surface-border rounded-lg space-y-1.5">
+                    <h5 className="font-bold text-white">1. Direct Platform API Integrations</h5>
+                    <p className="text-text-secondary text-[11px] leading-relaxed">
+                      Official partner webhooks with Meta Graph API, X Enterprise Firehose, TikTok Developer API, and Google Play Console.
+                    </p>
+                  </div>
+                  <div className="p-3.5 bg-canvas border border-surface-border rounded-lg space-y-1.5">
+                    <h5 className="font-bold text-white">2. Advanced Computer Vision</h5>
+                    <p className="text-text-secondary text-[11px] leading-relaxed">
+                      Anti-spoofing neural nets to detect flipped, color-shifted, and watermarked logos in avatars, videos, and post media.
+                    </p>
+                  </div>
+                  <div className="p-3.5 bg-canvas border border-surface-border rounded-lg space-y-1.5">
+                    <h5 className="font-bold text-white">3. Multilingual NLP Sentiment & Bio Analysis</h5>
+                    <p className="text-text-secondary text-[11px] leading-relaxed">
+                      Multilingual transformer models to parse cross-lingual social bios, deceptive DM templates, and scam scripts.
+                    </p>
+                  </div>
+                  <div className="p-3.5 bg-canvas border border-surface-border rounded-lg space-y-1.5">
+                    <h5 className="font-bold text-white">4. Fully Automated Takedown Workflows</h5>
+                    <p className="text-text-secondary text-[11px] leading-relaxed">
+                      Automated legal takedown dispatch via registrar EPP protocols, Cloudflare abuse automation, and app store takedown APIs.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Footer Action */}
+            <div className="pt-3 border-t border-surface-border flex items-center justify-between">
+              <span className="text-[10px] text-text-secondary">Ready for Hackathon Jury Evaluation</span>
+              <button
+                onClick={onClose}
+                className="px-4 py-1.5 rounded bg-gold hover:bg-gold-light text-black font-semibold text-xs transition-all cursor-pointer"
+              >
+                Close Pitch Pack
+              </button>
+            </div>
+
+          </div>
+        </div>
+      );
+    };
+
+    // --- MAIN APPLICATION ---
+    function App() {
+      // Authentication state
+      const [isAuthenticated, setIsAuthenticated] = useState(false);
+      const [loginEmail, setLoginEmail] = useState("m.vance@apexpay.corp");
+      const [loginPassword, setLoginPassword] = useState("••••••••••••");
+
+      // App view state
+      const [activeTab, setActiveTab] = useState('dashboard'); // dashboard | alerts | scanner | domains | reviews
+      const [isMobileLayout, setIsMobileLayout] = useState(false); // Mobile layout switcher
+      const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // Mobile 3-lines menu state
+
+      // Incidents state
+      const [incidents, setIncidents] = useState(INITIAL_INCIDENTS);
+      const [selectedIncident, setSelectedIncident] = useState(null);
+
+      // Filters
+      const [filterPlatform, setFilterPlatform] = useState("All");
+      const [filterSeverity, setFilterSeverity] = useState("All");
+      const [filterType, setFilterType] = useState("All");
+      const [searchQuery, setSearchQuery] = useState("");
+
+      // Pitch Pack Modal State
+      const [showPitchModal, setShowPitchModal] = useState(false);
+
+      // Real-time automatic attack simulation for live demo
+      useEffect(() => {
+        const timer = setTimeout(() => {
+          setIncidents(prev => {
+            if (prev.some(i => i.id === "INC-84999")) return prev;
+            const liveDemoThreat = {
+              id: "INC-84999",
+              platform: "TikTok",
+              targetBrand: customDomain.toUpperCase(),
+              assetName: `@${customDomain.split('.')[0]}_VIP_Giveaway`,
+              detectionType: "Executive Impersonation",
+              riskScore: 97,
+              status: "Active",
+              detectedTimestamp: "Just now (Live Telemetry)",
+              realPhoto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80",
+              evidence: {
+                logoSimilarity: 95.8,
+                accountAgeDays: 1,
+                followerRatio: "Followers: 6 | Following: 3,420",
+                flaggedStrings: ["Official executive giveaway", "Claim $1,000 grant"],
+                plainExplanation: `Autonomous surveillance caught a live impersonator copying ${customDomain} branding to harvest customer payment details.`
+              }
+            };
+            return [liveDemoThreat, ...prev];
+          });
+          showToast(`CRITICAL ALERT: New Impersonator Detected in Real Time - @${customDomain.split('.')[0]}_VIP_Giveaway (97/100)`);
+        }, 2500);
+
+        return () => clearTimeout(timer);
+      }, []);
+
+      // Custom Domain & Verification State
+      const [customDomain, setCustomDomain] = useState("apexpay.com");
+      const [domainInput, setDomainInput] = useState("");
+      const [isCheckingDomain, setIsCheckingDomain] = useState(false);
+      const [domainCheckStatus, setDomainCheckStatus] = useState("Verified & Active");
+      const [domainVerifiedTimestamp, setDomainVerifiedTimestamp] = useState("2026-10-10 18:24 UTC");
+      const [dnsRecords, setDnsRecords] = useState([
+        { type: "TXT", host: "_doppelguard-challenge.apexpay.com", value: "doppelguard-verify=8f9a01c4e", status: "Verified" },
+        { type: "CNAME", host: "security.apexpay.com", value: "ingest.doppelguard.net", status: "Verified & Active" },
+        { type: "TXT", host: "_dmarc.apexpay.com", value: "v=DMARC1; p=reject; rua=mailto:dmarc@apexpay.com", status: "Verified & Enforced" }
+      ]);
+
+      // Scanner
+      const [scannerInput, setScannerInput] = useState("");
+      const [isScanning, setIsScanning] = useState(false);
+      const [scanResult, setScanResult] = useState(null);
+
+      // Modals and feedback
+      const [showTakedownModal, setShowTakedownModal] = useState(false);
+      const [takedownContent, setTakedownContent] = useState("");
+      const [toastMsg, setToastMsg] = useState(null);
+
+      const showToast = (msg) => {
+        setToastMsg(msg);
+        setTimeout(() => setToastMsg(null), 3000);
+      };
+
+      // Metrics
+      const metrics = useMemo(() => {
+        const total = incidents.length;
+        const active = incidents.filter(i => i.status === "Active").length;
+        const critical = incidents.filter(i => i.riskScore >= 85).length;
+        const takedowns = incidents.filter(i => i.status === "Under Takedown" || i.status === "Confirmed Threat").length;
+        return { total, active, critical, takedowns };
+      }, [incidents]);
+
+      // Live Triage Queue Stats
+      const triageStats = useMemo(() => {
+        const confirmed = incidents.filter(i => i.status === "Confirmed Threat").length;
+        const underTakedown = incidents.filter(i => i.status === "Under Takedown").length;
+        const falsePositives = incidents.filter(i => i.status === "False Positive").length;
+        const resolved = incidents.filter(i => i.status === "Resolved").length;
+        const active = incidents.filter(i => i.status === "Active").length;
+        return { confirmed, underTakedown, falsePositives, resolved, active };
+      }, [incidents]);
+
+      // Advanced AI Autonomous Triage States
+      const [aiActionModal, setAiActionModal] = useState(null); // { incident, rec, docketId, step, completed }
+      const [aiBatchModal, setAiBatchModal] = useState(null); // { isRunning, step, processedCount, completed }
+      const [expandedReasoning, setExpandedReasoning] = useState({}); // { [incId]: boolean }
+      const [aiCopilotModal, setAiCopilotModal] = useState(null); // { title, question, answer, code }
+      const [triageFilter, setTriageFilter] = useState("all"); // all | pending | takedowns | critical
+
+      // Dynamic AI Recommendation Engine
+      const getAiRecommendation = (inc) => {
+        if (inc.detectionType === "Suspicious App") {
+          return {
+            action: "App Store Takedown & Rogue APK Hash Blacklist",
+            channel: inc.platform === "Google Play" ? "Google Play Trust & Safety API" : "Apple Developer Relations Abuse",
+            confidence: "99.4%",
+            sla: "< 30 Minutes",
+            riskLevel: "CRITICAL",
+            reasoning: "Decompiled APK reveals unauthorized brand trademark asset spoofing and intrusive SMS/Contact interception permissions.",
+            impact: "Prevents customer credential exfiltration and rogue transaction interception.",
+            steps: [
+              "Cryptographic keystore signature verification & hash generation",
+              "USPTO registered trademark #884920 correlation check",
+              "Submission of developer takedown notice to store safety desk"
+            ]
+          };
+        }
+        if (inc.detectionType === "Phishing Link") {
+          return {
+            action: "Emergency DNS Sinkhole & Registrar Domain Suspension",
+            channel: "Cloudflare Abuse API & Registrar EPP Gateway",
+            confidence: "98.7%",
+            sla: "< 15 Minutes",
+            riskLevel: "CRITICAL",
+            reasoning: "Typosquatted domain actively hosting credential harvesting page targeting online account credentials with 96.1% logo match.",
+            impact: "Immediate termination of incoming customer password harvesting.",
+            steps: [
+              "DNS lookup & WHOIS registrar ownership correlation",
+              "Automated ICANN UDRP fast-track abuse payload dispatch",
+              "Submission of URL to Google SafeBrowsing blacklist"
+            ]
+          };
+        }
+        if (inc.detectionType === "Fake Brand Account" || inc.detectionType === "Executive Impersonation") {
+          return {
+            action: "Automated Platform Abuse API Impersonation Dispatch",
+            channel: inc.platform === "Instagram" || inc.platform === "Facebook" ? "Meta Brand Rights API" : inc.platform === "X" ? "X Impersonation Operations" : "TikTok Trust & Safety Portal",
+            confidence: "97.8%",
+            sla: "< 25 Minutes",
+            riskLevel: inc.riskScore >= 90 ? "CRITICAL" : "HIGH",
+            reasoning: "Unverified profile replicating trademarked brand insignia, redirecting followers to unauthorized external fraud channels.",
+            impact: "Protects enterprise brand reputation and shields followers from financial scams.",
+            steps: [
+              "Vector image similarity match verification (94%+)",
+              "Title 17 § 512(c)(3) Statutory DMCA claim assembly",
+              "Direct webhook transmission to platform abuse desk"
+            ]
+          };
+        }
+        return {
+          action: "Financial Fraud Quarantine & Cease & Desist Demand",
+          channel: "SOC Fraud Enforcement Gateway",
+          confidence: "96.2%",
+          sla: "< 40 Minutes",
+          riskLevel: "HIGH",
+          reasoning: "Deceptive promotional activity soliciting payments or wallet connections under corporate guise.",
+          impact: "Halts illicit financial solicitation and alerts internal anti-fraud units.",
+          steps: [
+            "Evidence compilation with cryptographic timestamp",
+            "Drafting of formal Cease and Desist demand",
+            "Platform quarantine and live telemetry tracking"
+          ]
+        };
+      };
+
+      // Execute AI Autonomous Action Pipeline
+      const handleExecuteAiAction = (inc) => {
+        const rec = getAiRecommendation(inc);
+        const docketId = 'TK-' + inc.id.replace('INC-', '') + '-' + Math.floor(1000 + Math.random() * 9000);
+        
+        setAiActionModal({
+          incident: inc,
+          rec,
+          docketId,
+          step: 1,
+          completed: false
+        });
+
+        // Step 1 -> Step 2
+        setTimeout(() => {
+          setAiActionModal(prev => prev ? { ...prev, step: 2 } : null);
+        }, 700);
+
+        // Step 2 -> Step 3
+        setTimeout(() => {
+          setAiActionModal(prev => prev ? { ...prev, step: 3 } : null);
+        }, 1400);
+
+        // Step 3 -> Step 4 (Completed)
+        setTimeout(() => {
+          setAiActionModal(prev => prev ? { ...prev, step: 4, completed: true } : null);
+          updateIncidentStatus(inc.id, "Under Takedown");
+          showToast('AI Action Dispatched: ' + inc.id + ' is now Under Takedown (Docket #' + docketId + ')');
+        }, 2100);
+      };
+
+      // Batch Autonomous AI Triage
+      const handleRunBatchAiTriage = () => {
+        setAiBatchModal({ isRunning: true, step: 1, processedCount: 0, completed: false });
+
+        setTimeout(() => {
+          setAiBatchModal(prev => prev ? { ...prev, step: 2, processedCount: 3 } : null);
+        }, 800);
+
+        setTimeout(() => {
+          setIncidents(prev => prev.map(inc => {
+            if (inc.status === "Active") {
+              if (inc.riskScore >= 90) return { ...inc, status: "Under Takedown" };
+              if (inc.riskScore >= 75) return { ...inc, status: "Confirmed Threat" };
+            }
+            return inc;
+          }));
+
+          setAiBatchModal(prev => prev ? { ...prev, step: 3, processedCount: incidents.length, completed: true } : null);
+          showToast("Autonomous AI Triage Complete: All pending threats processed and dispatched!");
+        }, 1800);
+      };
+
+      // Toggle Neural Reasoning Card
+      const toggleReasoning = (id) => {
+        setExpandedReasoning(prev => ({ ...prev, [id]: !prev[id] }));
+      };
+
+      // Interactive AI Copilot Prompts
+      const handleOpenCopilot = (topicKey) => {
+        if (topicKey === 'sla') {
+          setAiCopilotModal({
+            title: "Platform Takedown SLAs & Escalation Routes",
+            question: "What are the fastest takedown routes and SLA timelines per platform?",
+            answer: "DoppelGuard AI utilizes pre-authorized enterprise abuse endpoints:\n• Meta Brand Rights API: 1-4 hour SLA for confirmed copyright/trademark infringements.\n• Google Play Trust & Safety: 2-6 hours for unverified debug signatures and intrusive permissions.\n• Cloudflare / Registrar EPP: 15-30 minutes via automated DNS sinkholing and abuse webhooks.\n• X Enterprise Firehose: 2-5 hours for VIP & executive impersonation tickets.",
+            category: "Enforcement Intelligence"
+          });
+        } else if (topicKey === 'advisory') {
+          setAiCopilotModal({
+            title: "Automated Customer Scam Advisory",
+            question: "Draft an emergency customer warning advisory for detected impersonations.",
+            answer: "PUBLIC SECURITY ADVISORY (ApexPay Trust & Safety):\nWe have detected malicious counterfeit profiles on social platforms offering fake refunds, giveaways, and loans. ApexPay will NEVER request your account password, two-factor SMS codes, or wallet keys via direct message. Please report any suspicious profiles immediately to security@apexpay.com.",
+            category: "Customer Protection"
+          });
+        } else if (topicKey === 'dmca') {
+          setAiCopilotModal({
+            title: "Statutory DMCA 512(c)(3) Legal Requirements",
+            question: "What legal elements are compiled in our automated takedown demands?",
+            answer: "Every takedown notice generated by DoppelGuard complies with 17 U.S.C. § 512(c)(3):\n1. Physical or electronic signature of authorized trademark agent.\n2. Identification of protected copyrighted work (USPTO #884920).\n3. Exact URL/handle of infringing material.\n4. Sufficient contact information for Platform Abuse Operations.\n5. Good-faith statement that use is not authorized by law or owner.\n6. Statement under penalty of perjury that information in notice is accurate.",
+            category: "Legal Compliance"
+          });
+        }
+      };
+
+      // Filtered incidents for Triage Queue
+      const displayedTriageIncidents = useMemo(() => {
+        let list = incidents.slice(0, 6);
+        if (triageFilter === 'pending') list = list.filter(i => i.status === 'Active');
+        else if (triageFilter === 'takedowns') list = list.filter(i => i.status === 'Under Takedown');
+        else if (triageFilter === 'critical') list = list.filter(i => i.riskScore >= 85);
+        else if (triageFilter === 'confirmed') list = list.filter(i => i.status === 'Confirmed Threat');
+        return list;
+      }, [incidents, triageFilter]);
+
+      // Authentication
+      const handleLogin = (e) => {
+        if (e) e.preventDefault();
+        setIsAuthenticated(true);
+        showToast("Signed in as Marcus Vance (CISO)");
+      };
+
+      const handleDemoLogin = () => {
+        setIsAuthenticated(true);
+        showToast("Logged in with Demo Credentials");
+      };
+
+      const handleLogout = () => {
+        setIsAuthenticated(false);
+        showToast("Signed out");
+      };
+
+      const navigateBackToFeed = () => {
+        setActiveTab('dashboard');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      // Robust Domain Checker & Verifier
+      const handleCustomDomainCheck = (targetLink) => {
+        const raw = targetLink || domainInput;
+        if (!raw || !raw.trim()) {
+          showToast("Please enter a website link or domain.");
+          return;
+        }
+
+        // Clean link: remove http://, https://, trailing slashes, paths, and query parameters
+        let cleaned = raw.trim();
+        cleaned = cleaned.replace(/^(https?:\/\/)?(www\.)?/, '');
+        cleaned = cleaned.split('/')[0].split('?')[0].split('#')[0].toLowerCase();
+
+        setIsCheckingDomain(true);
+        showToast(`Running custom verification check for: ${cleaned}...`);
+
+        setTimeout(() => {
+          setIsCheckingDomain(false);
+          setCustomDomain(cleaned);
+          setDomainInput(cleaned);
+          setDomainCheckStatus("Verified & Active");
+          setDomainVerifiedTimestamp(new Date().toISOString().replace('T', ' ').substring(0, 19) + " UTC");
+
+          const token = Math.random().toString(36).substring(2, 10);
+          setDnsRecords([
+            { type: "TXT", host: `_doppelguard-challenge.${cleaned}`, value: `doppelguard-verify=${token}`, status: "Verified" },
+            { type: "CNAME", host: `security.${cleaned}`, value: "ingest.doppelguard.net", status: "Verified & Active" },
+            { type: "TXT", host: `_dmarc.${cleaned}`, value: `v=DMARC1; p=reject; rua=mailto:dmarc@${cleaned}`, status: "Verified & Enforced" }
+          ]);
+
+          showToast(`SUCCESS: Domain ${cleaned} is now verified and actively protected.`);
+        }, 1000);
+      };
+
+      // Reset Domain Link to Initial Enterprise Host
+      const handleResetDomainLink = () => {
+        setDomainInput("");
+        setCustomDomain("apexpay.com");
+        setDomainCheckStatus("Verified & Active");
+        setDomainVerifiedTimestamp(new Date().toISOString().replace('T', ' ').substring(0, 19) + " UTC");
+        setDnsRecords([
+          { type: "TXT", host: "_doppelguard-challenge.apexpay.com", value: "doppelguard-verify=8f9a01c4e", status: "Verified" },
+          { type: "CNAME", host: "security.apexpay.com", value: "ingest.doppelguard.net", status: "Verified & Active" },
+          { type: "TXT", host: "_dmarc.apexpay.com", value: "v=DMARC1; p=reject; rua=mailto:dmarc@apexpay.com", status: "Verified & Enforced" }
+        ]);
+        showToast("Domain link reset to default host (apexpay.com)");
+      };
+
+      // Simulate threat
+      const handleSimulateThreat = () => {
+        const platforms = ["Instagram", "X", "TikTok", "Facebook", "Google Play"];
+        const selectedPlat = platforms[Math.floor(Math.random() * platforms.length)];
+        const id = "INC-" + Math.floor(85000 + Math.random() * 10000);
+        const score = Math.floor(82 + Math.random() * 16);
+
+        const newInc = {
+          id,
+          platform: selectedPlat,
+          targetBrand: customDomain.toUpperCase(),
+          assetName: `@${customDomain.split('.')[0]}_Official_Help`,
+          detectionType: "Fake Brand Account",
+          riskScore: score,
+          status: "Active",
+          detectedTimestamp: "Just now",
+          realPhoto: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=120&auto=format&fit=crop&q=80",
+          evidence: {
+            logoSimilarity: 92.5,
+            accountAgeDays: 1,
+            followerRatio: "Followers: 8 | Following: 2,100",
+            flaggedStrings: ["Urgent account restore", "DM password"],
+            plainExplanation: `Counterfeit profile using authentic ${customDomain} logos to harvest customer login credentials.`
+          }
+        };
+
+        setIncidents(prev => [newInc, ...prev]);
+        showToast(`Threat Detected: ${id} (${score}/100)`);
+      };
+
+      // Takedown Dossier
+      const handleGenerateTakedown = (inc) => {
+        const report = `================================================================================
+DOPPELGUARD DIGITAL RISK PROTECTION: FORMAL REMOVAL DEMAND
+ISSUED TO PLATFORM ABUSE OPERATIONS
+================================================================================
+INCIDENT ID: ${inc.id}
+TIMESTAMP: ${new Date().toISOString()}
+PROTECTED TRADEMARK: ${inc.targetBrand} (USPTO #884920)
+OFFENDING ASSET: ${inc.assetName}
+NETWORK: ${inc.platform}
+RISK SCORE: ${inc.riskScore}/100 (CRITICAL INFRINGEMENT)
+
+FORENSIC EVIDENCE:
+1. Brand Logo Vector Similarity: ${inc.evidence.logoSimilarity}% match against registered trademark
+2. Account Age: ${inc.evidence.accountAgeDays} days
+3. Profile Metrics: ${inc.evidence.followerRatio}
+4. Deceptive Messaging: ${inc.evidence.flaggedStrings.join(" | ")}
+
+SUMMARY:
+${inc.evidence.plainExplanation}
+
+LEGAL DEMAND:
+Pursuant to Title 17, United States Code, Section 512(c)(3) (DMCA) and platform impersonation policies, immediate suspension of this unauthorized asset is formally demanded.
+
+Authorized Security Officer: DoppelGuard SOC Proxy
+Contact: abuse-desk@doppelguard.net / legal@apexpay.corp
+================================================================================`;
+
+        setTakedownContent(report);
+        setShowTakedownModal(true);
+      };
+
+      const updateIncidentStatus = (id, newStatus) => {
+        setIncidents(prev => prev.map(inc => inc.id === id ? { ...inc, status: newStatus } : inc));
+        if (selectedIncident && selectedIncident.id === id) {
+          setSelectedIncident(prev => ({ ...prev, status: newStatus }));
+        }
+        showToast(`Updated to: ${newStatus}`);
+      };
+
+      // Run App Scanner (Supports custom packages, app names & sample presets)
+      const handleRunScanner = (explicitAppData) => {
+        setIsScanning(true);
+        setScanResult(null);
+
+        let target = explicitAppData;
+        if (!target) {
+          const rawQuery = (scannerInput || "").trim();
+          if (!rawQuery) {
+            target = TEST_APPLICATIONS[0];
+            setScannerInput(target.name);
+          } else {
+            const matched = TEST_APPLICATIONS.find(a => 
+              a.name.toLowerCase().includes(rawQuery.toLowerCase()) || 
+              a.packageId.toLowerCase().includes(rawQuery.toLowerCase())
+            );
+            if (matched) {
+              target = matched;
+            } else {
+              const isMal = /loan|fast|cash|free|hack|claim|drain|airdrop/i.test(rawQuery);
+              target = {
+                name: rawQuery,
+                packageId: rawQuery.includes('.') ? rawQuery : `com.${rawQuery.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}.app`,
+                developer: "Third-Party Unverified Developer",
+                verdict: isMal ? "Malicious" : "Suspicious",
+                score: isMal ? 96 : 74,
+                permissions: isMal ? ["RECEIVE_SMS", "READ_CONTACTS", "INTERNET"] : ["INTERNET", "ACCESS_NETWORK_STATE"],
+                plainText: `Decompilation audit analyzed package '${rawQuery}'. Flagged unverified debug signature and intrusive network activity targeting brand identity.`,
+                reasons: [
+                  "Unverified developer cryptographic key",
+                  "Trademark and asset namespace collision",
+                  isMal ? "Intrusive SMS interception permission requested" : "Insecure unencrypted transmission detected"
+                ]
+              };
+            }
+          }
+        }
+
+        setTimeout(() => {
+          setIsScanning(false);
+          setScanResult(target);
+          showToast(`Audit Complete: ${target.name} (${target.verdict})`);
+        }, 1200);
+      };
+
+      // Filtered incidents
+      const filteredIncidents = useMemo(() => {
+        return incidents.filter(i => {
+          if (filterPlatform !== "All" && i.platform !== filterPlatform) return false;
+          if (filterType !== "All" && i.detectionType !== filterType) return false;
+          if (filterSeverity !== "All") {
+            if (filterSeverity === "Critical (85+)" && i.riskScore < 85) return false;
+            if (filterSeverity === "High (70-84)" && (i.riskScore < 70 || i.riskScore >= 85)) return false;
+            if (filterSeverity === "Medium (<70)" && i.riskScore >= 70) return false;
+          }
+          if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            const matchName = i.assetName.toLowerCase().includes(q);
+            const matchId = i.id.toLowerCase().includes(q);
+            const matchType = i.detectionType.toLowerCase().includes(q);
+            if (!matchName && !matchId && !matchType) return false;
+          }
+          return true;
+        });
+      }, [incidents, filterPlatform, filterType, filterSeverity, searchQuery]);
+
+      // --- IF NOT LOGGED IN: LUXURY SIGN IN PAGE WITH BRAND ANIMATION ---
+      if (!isAuthenticated) {
+        return (
+          <div className="relative min-h-screen bg-canvas text-text-primary flex flex-col justify-center items-center p-6 overflow-hidden">
+            {/* Ambient Background Brand Animation & Advertisement */}
+            <BrandLoginCanvas />
+
+            {/* Transparent Glass Card in the Middle Background */}
+            <div className="relative z-10 w-full max-w-md bg-black/40 backdrop-blur-md border border-gold/40 rounded-xl p-8 sm:p-10 shadow-[0_0_80px_rgba(0,0,0,0.85)] space-y-7">
+              
+              {/* DoppelGuard Official Logo */}
+              <div className="text-center space-y-3">
+                <img 
+                  src="./doppelguard-logo.jpg" 
+                  alt="DOPPELGUARD DIGITAL RISK PROTECTION" 
+                  className="w-40 h-auto mx-auto rounded shadow-lg object-contain border border-gold/40"
+                />
+                <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-wide">
+                  DOPPELGUARD
+                </h1>
+                <p className="text-xs font-sans text-gold/80 tracking-widest uppercase">
+                  Digital Risk Protection Platform
+                </p>
+              </div>
+
+              {/* Login Form with Transparent Glass Styling */}
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <label className="block text-text-secondary text-xs uppercase font-sans mb-1 font-semibold">
+                    Work Email
+                  </label>
+                  <div className="relative">
+                    <IconUser className="w-4 h-4 absolute left-3 top-3 text-gold" />
+                    <input
+                      type="email"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      required
+                      className="w-full bg-black/50 border border-gold/30 pl-10 pr-3 py-2.5 rounded text-white focus:outline-none focus:border-gold text-xs font-sans placeholder-text-secondary"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-text-secondary text-xs uppercase font-sans mb-1 font-semibold">
+                    Security Passcode
+                  </label>
+                  <div className="relative">
+                    <IconLock className="w-4 h-4 absolute left-3 top-3 text-gold" />
+                    <input
+                      type="password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      required
+                      className="w-full bg-black/50 border border-gold/30 pl-10 pr-3 py-2.5 rounded text-white focus:outline-none focus:border-gold text-xs font-sans placeholder-text-secondary"
+                    />
+                  </div>
+                </div>
+
+                {/* Unified Standard Button */}
+                <button
+                  type="submit"
+                  className="w-full px-6 py-2.5 rounded bg-gold hover:bg-gold-light text-black font-sans font-semibold text-xs tracking-wider uppercase transition-all shadow-sm flex items-center justify-center space-x-2 cursor-pointer mt-2"
+                >
+                  <IconShield className="w-4 h-4 text-black" />
+                  <span>Sign In to DoppelGuard</span>
+                </button>
+              </form>
+
+              {/* Quick 1-Click Access for Evaluation */}
+              <div className="pt-3 border-t border-gold/25 text-center">
+                <button
+                  type="button"
+                  onClick={handleDemoLogin}
+                  className="text-xs font-sans text-gold hover:underline font-semibold tracking-wide cursor-pointer"
+                >
+                  Instant 1-Click Evaluation Sign In →
+                </button>
+              </div>
+
+            </div>
+          </div>
+        );
+      }
+
+      // --- LOGGED IN CONSOLE ---
+      return (
+        <div className={`relative min-h-screen bg-transparent text-text-primary flex flex-col font-sans overflow-x-hidden ${isMobileLayout ? 'bg-black/60 py-6' : ''}`}>
+          
+          {/* Ambient Brand Background Animation Running Across Entire App */}
+          <BrandBackgroundCanvas />
+
+          {/* Main App Shell: Supports Full Width OR Forced Mobile Frame with Transparent Glass in Middle */}
+          <div className={`relative z-10 flex flex-col flex-1 w-full ${isMobileLayout ? 'max-w-md mx-auto bg-black/40 backdrop-blur-md border border-gold/30 shadow-2xl rounded-2xl overflow-hidden mobile-layout-active text-xs' : 'bg-transparent'}`}>
+
+            {/* Notification Toast */}
+            {toastMsg && (
+              <div className="fixed top-4 right-4 z-[60] bg-surface-raised border border-gold text-white px-5 py-3 rounded shadow-2xl text-xs font-sans flex items-center space-x-2">
+                <span className="w-2 h-2 rounded-full bg-gold"></span>
+                <span>{toastMsg}</span>
+              </div>
+            )}
+
+            {/* LUXURY HEADER (3-LINES MENU ON LEFT TOP CORNER + BRAND LOGO) */}
+            <header className="border-b border-surface-border bg-surface/85 backdrop-blur-md sticky top-0 z-40">
+              <div className={`max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 ${isMobileLayout ? 'h-14' : 'h-16'} flex items-center justify-between`}>
+                
+                {/* Left Top Corner: Three-lines Menu button + DoppelGuard Logo */}
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                  
+                  {/* Three-lines Hamburger Menu button (on left top corner for mobile layout and small screens) */}
+                  <button
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className={`${!isMobileLayout ? 'lg:hidden' : ''} p-1.5 sm:p-2 rounded bg-surface-raised hover:bg-canvas border border-surface-border text-gold transition-colors flex items-center justify-center cursor-pointer`}
+                    aria-label="Toggle navigation menu"
+                    title="Menu (3 lines)"
+                  >
+                    {mobileMenuOpen ? (
+                      <IconX className={`${isMobileLayout ? 'w-3.5 h-3.5' : 'w-4 h-4'} text-gold`} />
+                    ) : (
+                      <IconMenu className={`${isMobileLayout ? 'w-3.5 h-3.5' : 'w-4 h-4'} text-gold`} />
+                    )}
+                  </button>
+
+                  {/* Brand Logo & Name at the Left Top Corner */}
+                  <div className="flex items-center space-x-2 cursor-pointer" onClick={navigateBackToFeed}>
+                    <img 
+                      src="./doppelguard-logo.jpg" 
+                      alt="DoppelGuard" 
+                      className={`${isMobileLayout ? 'h-7' : 'h-10'} w-auto rounded object-contain border border-gold/30`}
+                    />
+                    <div>
+                      <span className={`font-serif font-bold text-white tracking-wider block ${isMobileLayout ? 'text-xs' : 'text-base'}`}>
+                        DOPPELGUARD
+                      </span>
+                      <span className={`${isMobileLayout ? 'text-[8px]' : 'text-[10px]'} text-text-secondary uppercase tracking-widest block font-sans`}>
+                        Digital Risk Protection
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* EXACTLY 5 MENU LINKS (Hidden in Forced Mobile Mode or Small Screen) */}
+                {!isMobileLayout && (
+                  <nav className="hidden lg:flex items-center space-x-1 text-xs font-semibold">
+                    <button
+                      onClick={() => setActiveTab('dashboard')}
+                      className={`px-3.5 py-2 rounded transition-colors ${
+                        activeTab === 'dashboard' ? 'bg-surface-raised text-gold border border-surface-border' : 'text-text-secondary hover:text-white'
+                      }`}
+                    >
+                      1. Threat Feed
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('alerts')}
+                      className={`px-3.5 py-2 rounded transition-colors ${
+                        activeTab === 'alerts' ? 'bg-surface-raised text-gold border border-surface-border' : 'text-text-secondary hover:text-white'
+                      }`}
+                    >
+                      2. Triage Queue
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('scanner')}
+                      className={`px-3.5 py-2 rounded transition-colors ${
+                        activeTab === 'scanner' ? 'bg-surface-raised text-gold border border-surface-border' : 'text-text-secondary hover:text-white'
+                      }`}
+                    >
+                      3. App Scanner
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('domains')}
+                      className={`px-3.5 py-2 rounded transition-colors ${
+                        activeTab === 'domains' ? 'bg-surface-raised text-gold border border-surface-border' : 'text-text-secondary hover:text-white'
+                      }`}
+                    >
+                      4. Domain Shield
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('reviews')}
+                      className={`px-3.5 py-2 rounded transition-colors ${
+                        activeTab === 'reviews' ? 'bg-surface-raised text-gold border border-surface-border' : 'text-text-secondary hover:text-white'
+                      }`}
+                    >
+                      5. Client Reviews
+                    </button>
+                  </nav>
+                )}
+
+                {/* Right Actions: Pitch Pack, Mobile Switcher & Sign Out */}
+                <div className="flex items-center space-x-1.5 sm:space-x-2">
+                  
+                  {/* Pitch Pack & 60s Demo Button */}
+                  <button
+                    onClick={() => setShowPitchModal(true)}
+                    className={`${isMobileLayout ? 'px-2 py-1 text-[11px]' : 'px-3 py-1.5 text-xs'} rounded font-semibold flex items-center space-x-1.5 transition-colors border bg-gold/15 hover:bg-gold/25 border-gold text-gold cursor-pointer`}
+                    title="Judge Pitch Pack, 60s Demo Script & Answers"
+                  >
+                    <IconFileText className={`${isMobileLayout ? 'w-3 h-3' : 'w-3.5 h-3.5'} text-gold`} />
+                    <span>{isMobileLayout ? "Pitch" : "⚡ Pitch Pack & 60s Demo"}</span>
+                  </button>
+
+                  {/* Interactive Mobile Viewport Switcher */}
+                  <button
+                    onClick={() => {
+                      const next = !isMobileLayout;
+                      setIsMobileLayout(next);
+                      setMobileMenuOpen(false);
+                      showToast(next ? "Switched to Mobile Layout: Font reduced & 3-line menu active" : "Switched to Desktop Layout");
+                    }}
+                    className={`${isMobileLayout ? 'px-2 py-1 text-[11px]' : 'px-3 py-1.5 text-xs'} rounded font-semibold flex items-center space-x-1 transition-colors border ${
+                      isMobileLayout 
+                        ? 'bg-gold text-black border-gold' 
+                        : 'bg-surface-raised text-text-secondary hover:text-white border-surface-border'
+                    }`}
+                    title="Toggle mobile device layout"
+                  >
+                    <IconSmartphone className={`${isMobileLayout ? 'w-3 h-3' : 'w-3.5 h-3.5'}`} />
+                    <span>{isMobileLayout ? "Mobile: ON" : "Mobile Layout"}</span>
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+                    className={`${isMobileLayout ? 'px-2 py-1 text-[11px]' : 'px-2.5 py-1.5 text-xs'} rounded bg-surface-raised hover:bg-canvas text-text-secondary hover:text-white border border-surface-border font-sans font-medium`}
+                  >
+                    Sign Out
+                  </button>
+                </div>
+
+              </div>
+
+              {/* Three-lines Dropdown Drawer Menu (Triggered from 3 lines icon on left top corner) */}
+              {mobileMenuOpen && (
+                <div className="border-t border-surface-border bg-surface-raised/95 backdrop-blur-md px-4 py-3 space-y-1.5 shadow-2xl">
+                  <div className="text-[10px] font-sans font-semibold text-text-secondary uppercase tracking-widest mb-1 px-2 flex items-center justify-between">
+                    <span>Navigation Menu</span>
+                    <span className="text-gold">DoppelGuard DRP</span>
+                  </div>
+                  {[
+                    { id: 'dashboard', label: '1. Threat Feed' },
+                    { id: 'alerts', label: '2. Triage Queue' },
+                    { id: 'scanner', label: '3. App Scanner' },
+                    { id: 'domains', label: '4. Domain Shield' },
+                    { id: 'reviews', label: '5. Client Reviews' },
+                  ].map(item => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        setActiveTab(item.id);
+                        setMobileMenuOpen(false);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${
+                        activeTab === item.id 
+                          ? 'bg-gold text-black font-bold' 
+                          : 'text-text-secondary hover:text-white hover:bg-surface'
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      {activeTab === item.id && <span className="text-[10px] uppercase tracking-wider font-bold">Active</span>}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => {
+                      setShowPitchModal(true);
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded text-xs font-semibold bg-gold/15 border border-gold/40 text-gold flex items-center justify-between cursor-pointer"
+                  >
+                    <span>⚡ Judge Pitch Pack & 60s Script</span>
+                    <span className="text-[10px] uppercase font-bold">Hackathon</span>
+                  </button>
+                  <div className="pt-2 border-t border-surface-border/60 flex items-center justify-between text-[10px] text-text-secondary px-2">
+                    <span>Officer: Marcus Vance (CISO)</span>
+                    <button onClick={handleLogout} className="text-gold hover:underline font-semibold cursor-pointer">Sign Out</button>
+                  </div>
+                </div>
+              )}
+            </header>
+
+            {/* MAIN CONTENT AREA */}
+            <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-10 ${isMobileLayout ? 'px-3 py-5 space-y-5' : ''}`}>
+
+              {/* SECTION 1: THREAT FEED */}
+              {activeTab === 'dashboard' && (
+                <div className="space-y-6">
+                  
+                  {/* Hero / Big Headline Section with Scaled Down Font in Mobile */}
+                  <div className={`bg-surface panel-border ${isMobileLayout ? 'p-4 space-y-4' : 'p-6 sm:p-10 space-y-6'} rounded-lg`}>
+                    <div className="max-w-3xl space-y-2">
+                      <span className={`${isMobileLayout ? 'text-[10px]' : 'text-xs'} font-serif font-bold text-gold uppercase tracking-widest block`}>
+                        Autonomous Brand Surveillance
+                      </span>
+                      <h1 className={`${isMobileLayout ? 'text-lg font-serif font-bold' : 'text-3xl sm:text-5xl md:text-6xl font-serif font-bold'} text-white tracking-tight leading-tight`}>
+                        Stop Impersonation Before It Hurts Your Brand.
+                      </h1>
+                      <p className={`${isMobileLayout ? 'text-xs' : 'text-sm sm:text-base'} text-text-secondary leading-relaxed`}>
+                        DoppelGuard neutralizes counterfeit accounts, scam giveaways, and copycat apps before customer trust is compromised.
+                      </p>
+                    </div>
+
+                    {/* Operational Metrics Grid with Reduced Fonts */}
+                    <div className={`grid ${isMobileLayout ? 'grid-cols-2 gap-2.5 pt-4' : 'grid-cols-2 md:grid-cols-4 gap-6 pt-6'} border-t border-surface-border`}>
+                      <div className="space-y-0.5">
+                        <span className={`${isMobileLayout ? 'text-[9px]' : 'text-[11px]'} uppercase text-text-secondary font-semibold block`}>Total Monitored</span>
+                        <span className={`${isMobileLayout ? 'text-lg' : 'text-3xl'} font-serif font-bold text-white block`}>{metrics.total}</span>
+                        <span className={`${isMobileLayout ? 'text-[9px]' : 'text-[10px]'} text-text-secondary block`}>Real-time Feed</span>
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className={`${isMobileLayout ? 'text-[9px]' : 'text-[11px]'} uppercase text-text-secondary font-semibold block`}>Critical Threats</span>
+                        <span className={`${isMobileLayout ? 'text-lg' : 'text-3xl'} font-serif font-bold text-risk-critical block`}>{metrics.critical}</span>
+                        <span className={`${isMobileLayout ? 'text-[9px]' : 'text-[10px]'} text-risk-critical block`}>Immediate Action</span>
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className={`${isMobileLayout ? 'text-[9px]' : 'text-[11px]'} uppercase text-text-secondary font-semibold block`}>Under Takedown</span>
+                        <span className={`${isMobileLayout ? 'text-lg' : 'text-3xl'} font-serif font-bold text-gold block`}>{metrics.takedowns}</span>
+                        <span className={`${isMobileLayout ? 'text-[9px]' : 'text-[10px]'} text-text-secondary block`}>Notices Sent</span>
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className={`${isMobileLayout ? 'text-[9px]' : 'text-[11px]'} uppercase text-text-secondary font-semibold block`}>Protection Rate</span>
+                        <span className={`${isMobileLayout ? 'text-lg' : 'text-3xl'} font-serif font-bold text-risk-low block`}>99.4%</span>
+                        <span className={`${isMobileLayout ? 'text-[9px]' : 'text-[10px]'} text-risk-low block`}>Platform Removal</span>
+                      </div>
+                    </div>
+
+                    {/* Exactly ONE Button for this Section */}
+                    <div>
+                      <button
+                        onClick={handleSimulateThreat}
+                        className={`w-full sm:w-auto ${isMobileLayout ? 'px-4 py-2 text-[11px]' : 'px-6 py-2.5 text-xs'} rounded bg-gold hover:bg-gold-light text-black font-sans font-semibold tracking-wider uppercase transition-all shadow-sm flex items-center justify-center space-x-2 cursor-pointer`}
+                      >
+                        <IconPlus className="w-3.5 h-3.5 text-black" />
+                        <span>Simulate Incoming Attack</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* EXECUTIVE ANALYTICS: DUAL CHARTS (THREATS BY PLATFORM & 7-DAY VELOCITY TREND) */}
+                  <AnalyticsCharts isMobileLayout={isMobileLayout} />
+
+                  {/* Filter and Search Bar with Platform, Threat Type, and Severity Filtering */}
+                  <div className={`bg-surface panel-border ${isMobileLayout ? 'p-3 space-y-3' : 'p-4 sm:p-6 space-y-4'} rounded-lg`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="relative flex-1">
+                        <IconSearch className="w-3.5 h-3.5 absolute left-3 top-2.5 text-text-secondary" />
+                        <input
+                          type="text"
+                          placeholder="Search threat name, incident ID, or attack type..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className={`w-full bg-canvas border border-surface-border pl-9 pr-3 ${isMobileLayout ? 'py-1.5 text-[11px]' : 'py-2 text-xs'} rounded text-white placeholder-text-secondary focus:outline-none focus:border-gold`}
+                        />
+                      </div>
+
+                      {/* Platform Filter Buttons */}
+                      <div className="flex items-center flex-wrap gap-1">
+                        <span className="text-[10px] text-text-secondary font-semibold uppercase mr-1">Platform:</span>
+                        {["All", "Instagram", "X", "TikTok", "Facebook", "Google Play", "App Store"].map(plat => (
+                          <button
+                            key={plat}
+                            onClick={() => setFilterPlatform(plat)}
+                            className={`${isMobileLayout ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-xs'} rounded transition-all cursor-pointer ${
+                              filterPlatform === plat 
+                                ? 'bg-gold text-black font-semibold' 
+                                : 'bg-canvas text-text-secondary hover:text-white border border-surface-border'
+                            }`}
+                          >
+                            {plat}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Threat Type & Severity Filter Row */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 pt-2 border-t border-surface-border/60">
+                      {/* Threat Type Filters */}
+                      <div className="flex items-center flex-wrap gap-1">
+                        <span className="text-[10px] text-text-secondary font-semibold uppercase mr-1">Threat Type:</span>
+                        {["All", "Fake Brand Account", "Suspicious App", "Scam Account", "Executive Impersonation", "Phishing Link"].map(type => (
+                          <button
+                            key={type}
+                            onClick={() => setFilterType(type)}
+                            className={`${isMobileLayout ? 'px-2 py-0.5 text-[10px]' : 'px-2 py-0.5 text-[11px]'} rounded transition-all cursor-pointer ${
+                              filterType === type 
+                                ? 'bg-gold text-black font-semibold' 
+                                : 'bg-canvas text-text-secondary hover:text-white border border-surface-border'
+                            }`}
+                          >
+                            {type}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Severity Filters */}
+                      <div className="flex items-center flex-wrap gap-1">
+                        <span className="text-[10px] text-text-secondary font-semibold uppercase mr-1">Severity:</span>
+                        {["All", "Critical (85+)", "High (70-84)", "Medium (<70)"].map(sev => (
+                          <button
+                            key={sev}
+                            onClick={() => setFilterSeverity(sev)}
+                            className={`${isMobileLayout ? 'px-2 py-0.5 text-[10px]' : 'px-2 py-0.5 text-[11px]'} rounded transition-all cursor-pointer ${
+                              filterSeverity === sev 
+                                ? 'bg-gold text-black font-semibold' 
+                                : 'bg-canvas text-text-secondary hover:text-white border border-surface-border'
+                            }`}
+                          >
+                            {sev}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* THREAT FEED LIST */}
+                  <div className="bg-surface panel-border rounded-lg overflow-hidden">
+                    
+                    {/* Desktop Table View (Only if NOT in Mobile Preview) */}
+                    {!isMobileLayout && (
+                      <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="border-b border-surface-border text-xs text-text-secondary bg-canvas uppercase font-semibold">
+                              <th className="py-4 px-6">Evidence Photo</th>
+                              <th className="py-4 px-6">Incident ID</th>
+                              <th className="py-4 px-6">Platform</th>
+                              <th className="py-4 px-6">Offending Asset</th>
+                              <th className="py-4 px-6">Threat Type</th>
+                              <th className="py-4 px-6">Risk</th>
+                              <th className="py-4 px-6">Status</th>
+                              <th className="py-4 px-6 text-right">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-surface-border text-xs">
+                            {filteredIncidents.map(inc => (
+                              <tr 
+                                key={inc.id} 
+                                onClick={() => setSelectedIncident(inc)}
+                                className="table-row-hover cursor-pointer transition-colors"
+                              >
+                                <td className="py-4 px-6">
+                                  <img 
+                                    src={inc.realPhoto} 
+                                    alt={inc.assetName} 
+                                    className="w-10 h-10 rounded object-cover border border-surface-border" 
+                                  />
+                                </td>
+                                <td className="py-4 px-6 font-bold text-gold">{inc.id}</td>
+                                <td className="py-4 px-6">
+                                  <PlatformBadge platform={inc.platform} />
+                                </td>
+                                <td className="py-4 px-6 font-semibold text-white truncate max-w-xs">{inc.assetName}</td>
+                                <td className="py-4 px-6 text-text-secondary">{inc.detectionType}</td>
+                                <td className="py-4 px-6">
+                                  <span className={`px-2 py-0.5 rounded font-semibold ${
+                                    inc.riskScore >= 85 ? 'text-red-400 bg-risk-critical/20' : 'text-amber-400 bg-risk-medium/20'
+                                  }`}>
+                                    {inc.riskScore}/100
+                                  </span>
+                                </td>
+                                <td className="py-4 px-6 font-semibold text-text-secondary">{inc.status}</td>
+                                <td className="py-4 px-6 text-right">
+                                  <span className="text-gold hover:underline font-semibold">Inspect →</span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
+                    {/* Mobile Card View (Shown on Phones OR in Mobile Mode with Scaled Down Font) */}
+                    <div className={`${!isMobileLayout ? 'md:hidden' : ''} divide-y divide-surface-border`}>
+                      {filteredIncidents.map(inc => (
+                        <div 
+                          key={inc.id} 
+                          onClick={() => setSelectedIncident(inc)}
+                          className={`${isMobileLayout ? 'p-3 space-y-2' : 'p-4 space-y-3'} cursor-pointer hover:bg-surface-raised transition-colors`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-gold text-[10px] sm:text-xs">{inc.id}</span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                              inc.riskScore >= 85 ? 'text-red-400 bg-risk-critical/20' : 'text-amber-400 bg-risk-medium/20'
+                            }`}>
+                              Risk {inc.riskScore}/100
+                            </span>
+                          </div>
+
+                          <div className="flex items-center space-x-2.5">
+                            <img 
+                              src={inc.realPhoto} 
+                              alt={inc.assetName} 
+                              className={`${isMobileLayout ? 'w-10 h-10' : 'w-12 h-12'} rounded object-cover border border-surface-border flex-shrink-0`}
+                            />
+                            <div className="min-w-0 flex-1">
+                              <h4 className={`font-semibold text-white truncate ${isMobileLayout ? 'text-xs' : 'text-sm'}`}>{inc.assetName}</h4>
+                              <p className="text-[10px] text-text-secondary truncate">{inc.detectionType} • {inc.platform}</p>
+                            </div>
+                          </div>
+
+                          <p className="text-[11px] text-text-secondary leading-relaxed line-clamp-2">
+                            {inc.evidence.plainExplanation}
+                          </p>
+
+                          <div className="pt-2 flex items-center justify-between text-[10px] border-t border-surface-border/50">
+                            <span className="text-text-secondary">{inc.detectedTimestamp}</span>
+                            <span className="text-gold font-semibold">View Forensics →</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                  </div>
+
+                </div>
+              )}
+
+              {/* SECTION 2: TRIAGE QUEUE (SCALED FOR MOBILE) */}
+              {activeTab === 'alerts' && (
+                <div className="space-y-4 sm:space-y-6">
+                  
+                  {/* Back Button */}
+                  <div className="flex items-center justify-between pb-2 border-b border-surface-border">
+                    <button
+                      onClick={navigateBackToFeed}
+                      className="inline-flex items-center space-x-1.5 text-xs font-semibold text-gold hover:underline cursor-pointer"
+                    >
+                      <IconArrowLeft className="w-3.5 h-3.5" />
+                      <span>Back to Threat Feed</span>
+                    </button>
+                    <span className="text-[10px] text-text-secondary uppercase">Autonomous Triage Center</span>
+                  </div>
+
+                  {/* Header with Autonomous AI Agent Control */}
+                  <div className={`bg-surface panel-border ${isMobileLayout ? 'p-4 space-y-2' : 'p-6 space-y-3'} rounded-lg`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <h2 className={`${isMobileLayout ? 'text-lg' : 'text-2xl sm:text-3xl'} font-serif font-bold text-white`}>
+                            Active Triage & AI Response Hub
+                          </h2>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono text-emerald-400 bg-risk-low/20 border border-risk-low/40 flex items-center space-x-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>AI Agent Active</span>
+                          </span>
+                        </div>
+                        <p className={`${isMobileLayout ? 'text-xs' : 'text-xs sm:text-sm'} text-text-secondary mt-1`}>
+                          Review intelligent AI recommended actions, inspect multi-modal forensic weights, or execute autonomous takedowns with zero human fatigue.
+                        </p>
+                      </div>
+
+                      {/* Autonomous AI Batch Execution Button */}
+                      <button
+                        onClick={handleRunBatchAiTriage}
+                        className={`${isMobileLayout ? 'w-full py-2 text-xs' : 'px-4 py-2.5 text-xs'} rounded bg-gradient-to-r from-gold via-gold-light to-gold hover:opacity-95 text-black font-semibold uppercase tracking-wider shadow-lg flex items-center justify-center space-x-2 cursor-pointer transition-all border border-gold`}
+                      >
+                        <IconZap className="w-4 h-4 text-black" />
+                        <span>Run Autonomous AI Triage (Batch)</span>
+                      </button>
+                    </div>
+
+                    {/* AI Threat Copilot Interactive Prompt Chips */}
+                    <div className="pt-2 border-t border-surface-border/60 flex flex-wrap items-center gap-2 text-[10px]">
+                      <span className="text-text-secondary font-mono flex items-center space-x-1">
+                        <IconCpu className="w-3 h-3 text-gold" />
+                        <span>Ask AI Copilot:</span>
+                      </span>
+                      <button
+                        onClick={() => handleOpenCopilot('sla')}
+                        className="px-2.5 py-1 rounded bg-surface hover:bg-surface-raised border border-surface-border text-gold font-semibold transition-colors cursor-pointer"
+                      >
+                        ⚡ Platform Takedown SLAs
+                      </button>
+                      <button
+                        onClick={() => handleOpenCopilot('advisory')}
+                        className="px-2.5 py-1 rounded bg-surface hover:bg-surface-raised border border-surface-border text-text-secondary hover:text-white transition-colors cursor-pointer"
+                      >
+                        📝 Customer Fraud Advisory
+                      </button>
+                      <button
+                        onClick={() => handleOpenCopilot('dmca')}
+                        className="px-2.5 py-1 rounded bg-surface hover:bg-surface-raised border border-surface-border text-text-secondary hover:text-white transition-colors cursor-pointer"
+                      >
+                        ⚖️ Statutory DMCA 512(c) Basis
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* LIVE TRIAGE QUEUE STATUS COUNTERS */}
+                  <div className={`grid ${isMobileLayout ? 'grid-cols-2 gap-2' : 'grid-cols-2 sm:grid-cols-5 gap-3'} bg-surface panel-border p-4 rounded-lg text-center`}>
+                    <div 
+                      onClick={() => setTriageFilter(triageFilter === 'pending' ? 'all' : 'pending')} 
+                      className={`p-2.5 bg-canvas border rounded cursor-pointer transition-colors ${triageFilter === 'pending' ? 'border-gold bg-gold/10' : 'border-surface-border hover:border-text-secondary'}`}
+                    >
+                      <span className="text-[10px] text-text-secondary uppercase block font-semibold">Active Ingested</span>
+                      <span className="text-xl font-serif font-bold text-white">{triageStats.active}</span>
+                    </div>
+                    <div 
+                      onClick={() => setTriageFilter(triageFilter === 'confirmed' ? 'all' : 'confirmed')} 
+                      className={`p-2.5 bg-canvas border rounded cursor-pointer transition-colors ${triageFilter === 'confirmed' ? 'border-red-400 bg-red-500/10' : 'border-surface-border hover:border-text-secondary'}`}
+                    >
+                      <span className="text-[10px] text-text-secondary uppercase block font-semibold">Confirmed Threats</span>
+                      <span className="text-xl font-serif font-bold text-red-400">{triageStats.confirmed}</span>
+                    </div>
+                    <div 
+                      onClick={() => setTriageFilter(triageFilter === 'takedowns' ? 'all' : 'takedowns')} 
+                      className={`p-2.5 bg-canvas border rounded cursor-pointer transition-colors ${triageFilter === 'takedowns' ? 'border-gold bg-gold/10' : 'border-surface-border hover:border-text-secondary'}`}
+                    >
+                      <span className="text-[10px] text-text-secondary uppercase block font-semibold">Under Takedown</span>
+                      <span className="text-xl font-serif font-bold text-gold">{triageStats.underTakedown}</span>
+                    </div>
+                    <div className="p-2.5 bg-canvas border border-surface-border rounded">
+                      <span className="text-[10px] text-text-secondary uppercase block font-semibold">False Positives</span>
+                      <span className="text-xl font-serif font-bold text-text-secondary">{triageStats.falsePositives}</span>
+                    </div>
+                    <div className="p-2.5 bg-canvas border border-surface-border rounded">
+                      <span className="text-[10px] text-text-secondary uppercase block font-semibold">Resolved</span>
+                      <span className="text-xl font-serif font-bold text-emerald-400">{triageStats.resolved}</span>
+                    </div>
+                  </div>
+
+                  {/* Filter Status Indicator */}
+                  {triageFilter !== 'all' && (
+                    <div className="flex items-center justify-between text-xs px-2 text-text-secondary">
+                      <span>Filtering queue by: <strong className="text-gold uppercase">{triageFilter}</strong></span>
+                      <button onClick={() => setTriageFilter('all')} className="text-gold underline cursor-pointer">Show All</button>
+                    </div>
+                  )}
+
+                  {/* Triage Items Grid with Full AI Recommendations */}
+                  <div className={`grid ${isMobileLayout ? 'grid-cols-1 gap-4' : 'grid-cols-1 md:grid-cols-2 gap-6'}`}>
+                    {displayedTriageIncidents.map(inc => {
+                      const rec = getAiRecommendation(inc);
+                      const isExpanded = !!expandedReasoning[inc.id];
+
+                      return (
+                        <div key={inc.id} className={`bg-surface panel-border ${isMobileLayout ? 'p-4 space-y-3' : 'p-6 space-y-4'} rounded-lg flex flex-col justify-between transition-all hover:border-gold/50`}>
+                          <div className="space-y-3">
+                            
+                            {/* Card Header */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-2">
+                                <span className="font-bold text-gold text-[10px] sm:text-xs font-mono">{inc.id}</span>
+                                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
+                                  inc.status === 'Confirmed Threat' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                                  inc.status === 'Resolved' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' :
+                                  inc.status === 'False Positive' ? 'bg-surface text-text-secondary border border-surface-border' :
+                                  inc.status === 'Under Takedown' ? 'bg-gold/20 text-gold border border-gold/40' :
+                                  'bg-canvas text-white border border-surface-border'
+                                }`}>
+                                  {inc.status}
+                                </span>
+                              </div>
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-risk-critical/20 text-red-400 font-mono">
+                                Risk {inc.riskScore}/100
+                              </span>
+                            </div>
+
+                            {/* Offending Asset Thumbnail & Title */}
+                            <div className="flex items-center space-x-3">
+                              <img src={inc.realPhoto} alt={inc.assetName} className={`${isMobileLayout ? 'w-11 h-11' : 'w-12 h-12'} rounded object-cover border border-surface-border flex-shrink-0`} />
+                              <div className="min-w-0 flex-1">
+                                <h4 className={`font-semibold text-white truncate ${isMobileLayout ? 'text-xs' : 'text-sm'}`}>{inc.assetName}</h4>
+                                <p className="text-[10px] text-text-secondary">{inc.platform} • {inc.detectionType}</p>
+                              </div>
+                            </div>
+
+                            <p className="text-[11px] text-text-secondary leading-relaxed">{inc.evidence.plainExplanation}</p>
+
+                            {/* AI RECOMMENDED ACTION CARD */}
+                            <div className="p-3 bg-canvas/90 border border-gold/40 rounded-lg space-y-2">
+                              <div className="flex items-center justify-between text-[10px]">
+                                <div className="flex items-center space-x-1 text-gold font-bold font-mono tracking-wider uppercase">
+                                  <IconZap className="w-3.5 h-3.5" />
+                                  <span>AI Recommendation</span>
+                                </div>
+                                <div className="flex items-center space-x-1.5 font-mono">
+                                  <span className="text-gold font-semibold bg-gold/15 px-2 py-0.5 rounded border border-gold/30">
+                                    {rec.confidence} Match
+                                  </span>
+                                  <span className="text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded border border-emerald-500/30">
+                                    {rec.sla}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="space-y-1">
+                                <h5 className="text-xs sm:text-sm font-semibold text-white leading-snug">
+                                  {rec.action}
+                                </h5>
+                                <div className="text-[10px] text-text-secondary flex items-center space-x-1.5">
+                                  <span className="text-gold">Channel:</span>
+                                  <span className="truncate">{rec.channel}</span>
+                                </div>
+                                <p className="text-[11px] text-text-secondary italic">
+                                  "{rec.reasoning}"
+                                </p>
+                                <div className="pt-1 text-[10px] text-emerald-300 flex items-center space-x-1">
+                                  <span className="text-text-secondary">Shielded Impact:</span>
+                                  <span className="font-semibold">{rec.impact}</span>
+                                </div>
+                              </div>
+
+                              {/* Primary Action Button: Execute AI Recommendation */}
+                              <button
+                                onClick={() => handleExecuteAiAction(inc)}
+                                className="w-full mt-2 py-2 px-3 rounded bg-gradient-to-r from-gold/90 via-gold to-gold-light hover:brightness-110 text-black font-semibold text-[11px] uppercase tracking-wider transition-all shadow-md flex items-center justify-center space-x-1.5 cursor-pointer"
+                              >
+                                <IconZap className="w-3.5 h-3.5 text-black" />
+                                <span>⚡ Auto-Execute AI Action</span>
+                              </button>
+                            </div>
+
+                            {/* AI Neural Reasoning Accordion Toggle */}
+                            <div>
+                              <button
+                                onClick={() => toggleReasoning(inc.id)}
+                                className="w-full py-1.5 px-2.5 rounded bg-surface hover:bg-surface-raised border border-surface-border text-left text-[11px] text-text-secondary hover:text-white flex items-center justify-between transition-colors cursor-pointer"
+                              >
+                                <span className="flex items-center space-x-1.5">
+                                  <IconCpu className="w-3.5 h-3.5 text-gold" />
+                                  <span className="font-semibold text-gold">Explainable AI Neural Signals</span>
+                                </span>
+                                {isExpanded ? <IconChevronUp className="w-3.5 h-3.5" /> : <IconChevronDown className="w-3.5 h-3.5" />}
+                              </button>
+
+                              {isExpanded && (
+                                <div className="mt-2 p-3 bg-canvas border border-surface-border rounded-lg space-y-2 text-[11px]">
+                                  <span className="text-[10px] uppercase font-bold text-text-secondary block">Signal Weights Breakdown:</span>
+                                  
+                                  <div className="space-y-1.5">
+                                    <div>
+                                      <div className="flex justify-between text-[10px]">
+                                        <span className="text-white">1. Vector Logo Cosine Match ({inc.evidence.logoSimilarity}%)</span>
+                                        <span className="text-gold font-bold">+35 pts</span>
+                                      </div>
+                                      <div className="w-full bg-surface-raised h-1.5 rounded-full overflow-hidden mt-0.5">
+                                        <div className="bg-gold h-full rounded-full" style={{ width: inc.evidence.logoSimilarity + '%' }}></div>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <div className="flex justify-between text-[10px]">
+                                        <span className="text-white">2. Account Creation Velocity ({inc.evidence.accountAgeDays} days)</span>
+                                        <span className="text-gold font-bold">+25 pts</span>
+                                      </div>
+                                      <div className="w-full bg-surface-raised h-1.5 rounded-full overflow-hidden mt-0.5">
+                                        <div className="bg-gold h-full rounded-full" style={{ width: '85%' }}></div>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <div className="flex justify-between text-[10px]">
+                                        <span className="text-white">3. Network Follower Asymmetry ({inc.evidence.followerRatio})</span>
+                                        <span className="text-gold font-bold">+20 pts</span>
+                                      </div>
+                                      <div className="w-full bg-surface-raised h-1.5 rounded-full overflow-hidden mt-0.5">
+                                        <div className="bg-gold h-full rounded-full" style={{ width: '70%' }}></div>
+                                      </div>
+                                    </div>
+
+                                    <div>
+                                      <div className="flex justify-between text-[10px]">
+                                        <span className="text-white">4. Flagged Lexical Triggers ({inc.evidence.flaggedStrings.join(', ')})</span>
+                                        <span className="text-gold font-bold">+20 pts</span>
+                                      </div>
+                                      <div className="w-full bg-surface-raised h-1.5 rounded-full overflow-hidden mt-0.5">
+                                        <div className="bg-gold h-full rounded-full" style={{ width: '90%' }}></div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="pt-2 border-t border-surface-border text-[10px] space-y-1">
+                                    <span className="text-gold font-semibold uppercase block">Autonomous Action Pipeline:</span>
+                                    {rec.steps.map((st, sidx) => (
+                                      <p key={sidx} className="text-text-secondary flex items-start space-x-1.5">
+                                        <span className="text-gold font-bold">{sidx + 1}.</span>
+                                        <span>{st}</span>
+                                      </p>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                          </div>
+
+                          {/* Manual Triage Controls (Confirmed / False Positive / Resolved + Generate Report) */}
+                          <div className="space-y-2 pt-3 border-t border-surface-border/60">
+                            <div className="flex items-center justify-between gap-1.5">
+                              <button
+                                onClick={() => updateIncidentStatus(inc.id, "Confirmed Threat")}
+                                className="flex-1 py-1 px-1.5 rounded bg-risk-critical/20 hover:bg-risk-critical/30 border border-risk-critical/40 text-red-300 text-[10px] font-semibold transition-colors cursor-pointer text-center"
+                              >
+                                Confirm Threat
+                              </button>
+                              <button
+                                onClick={() => updateIncidentStatus(inc.id, "False Positive")}
+                                className="flex-1 py-1 px-1.5 rounded bg-surface hover:bg-surface-raised border border-surface-border text-text-secondary hover:text-white text-[10px] font-semibold transition-colors cursor-pointer text-center"
+                              >
+                                False Positive
+                              </button>
+                              <button
+                                onClick={() => updateIncidentStatus(inc.id, "Resolved")}
+                                className="flex-1 py-1 px-1.5 rounded bg-risk-low/20 hover:bg-risk-low/30 border border-risk-low/40 text-emerald-300 text-[10px] font-semibold transition-colors cursor-pointer text-center"
+                              >
+                                Resolved
+                              </button>
+                            </div>
+
+                            <button
+                              onClick={() => {
+                                updateIncidentStatus(inc.id, "Under Takedown");
+                                handleGenerateTakedown(inc);
+                              }}
+                              className={`w-full ${isMobileLayout ? 'px-3 py-1.5 text-[10px]' : 'px-4 py-2 text-xs'} rounded bg-surface hover:bg-surface-raised text-gold border border-gold/40 font-sans font-semibold tracking-wider uppercase transition-all shadow-sm flex items-center justify-center space-x-1.5 cursor-pointer`}
+                            >
+                              <IconFileText className="w-3.5 h-3.5 text-gold" />
+                              <span>View / Generate Legal Takedown Demand</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                </div>
+              )}
+
+              {/* SECTION 3: APP SCANNER (SCALED FOR MOBILE) */}
+              {activeTab === 'scanner' && (
+                <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto">
+                  
+                  {/* Back Button */}
+                  <div className="flex items-center justify-between pb-2 border-b border-surface-border">
+                    <button
+                      onClick={navigateBackToFeed}
+                      className="inline-flex items-center space-x-1.5 text-xs font-semibold text-gold hover:underline cursor-pointer"
+                    >
+                      <IconArrowLeft className="w-3.5 h-3.5" />
+                      <span>← Back to Threat Feed</span>
+                    </button>
+                    <span className="text-[10px] text-text-secondary uppercase">Mobile App Audit</span>
+                  </div>
+
+                  <div className={`bg-surface panel-border ${isMobileLayout ? 'p-4 space-y-1.5' : 'p-6 space-y-2'} rounded-lg`}>
+                    <h2 className={`${isMobileLayout ? 'text-lg' : 'text-2xl sm:text-3xl'} font-serif font-bold text-white`}>Mobile Application Scanner</h2>
+                    <p className={`${isMobileLayout ? 'text-xs' : 'text-xs sm:text-sm'} text-text-secondary`}>
+                      Decompile and inspect rogue mobile applications targeting your brand identity.
+                    </p>
+                  </div>
+
+                  <div className={`bg-surface panel-border ${isMobileLayout ? 'p-4 space-y-4' : 'p-6 space-y-6'} rounded-lg`}>
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-[10px] uppercase text-text-secondary font-semibold">
+                          Package Identifier or App Name
+                        </label>
+                        {scannerInput && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setScannerInput("");
+                              setScanResult(null);
+                              showToast("Scanner package reset");
+                            }}
+                            className="text-[10px] text-gold hover:underline cursor-pointer flex items-center space-x-1"
+                          >
+                            <IconX className="w-3 h-3" />
+                            <span>Reset</span>
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="e.g. com.apexpay.fastloan.apk"
+                        value={scannerInput}
+                        onChange={(e) => setScannerInput(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleRunScanner(); }}
+                        className={`w-full bg-canvas border border-surface-border px-3.5 ${isMobileLayout ? 'py-2 text-xs' : 'py-3 text-sm'} rounded text-white focus:outline-none focus:border-gold`}
+                      />
+                    </div>
+
+                    {/* Sample Apps */}
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] text-text-secondary uppercase font-semibold block">Click to Test Samples:</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {TEST_APPLICATIONS.map((app, i) => (
+                          <button
+                            key={i}
+                            onClick={() => {
+                              setScannerInput(app.name);
+                              handleRunScanner(app);
+                            }}
+                            className={`px-2.5 py-1 rounded bg-canvas border border-surface-border ${isMobileLayout ? 'text-[10px]' : 'text-xs'} text-text-secondary hover:text-white cursor-pointer`}
+                          >
+                            {app.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Exactly One Action Button */}
+                    <button
+                      onClick={() => handleRunScanner()}
+                      disabled={isScanning}
+                      className={`w-full ${isMobileLayout ? 'px-4 py-2 text-[11px]' : 'px-6 py-2.5 text-xs'} rounded bg-gold hover:bg-gold-light text-black font-sans font-semibold tracking-wider uppercase transition-all shadow-sm flex items-center justify-center space-x-2 cursor-pointer`}
+                    >
+                      <IconTerminal className="w-3.5 h-3.5 text-black" />
+                      <span>{isScanning ? "Decompiling Application..." : "Execute Security Audit"}</span>
+                    </button>
+
+                    {/* Scan Results */}
+                    {scanResult && !isScanning && (
+                      <div className="p-4 bg-canvas border border-surface-border rounded-lg space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className={`font-serif font-bold text-white ${isMobileLayout ? 'text-sm' : 'text-base'}`}>{scanResult.name}</span>
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            scanResult.verdict === 'Malicious' ? 'bg-risk-critical/20 text-red-400' : 'bg-risk-low/20 text-emerald-400'
+                          }`}>
+                            {scanResult.verdict} ({scanResult.score}/100)
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-text-secondary">{scanResult.plainText}</p>
+                      </div>
+                    )}
+
+                  </div>
+
+                </div>
+              )}
+
+              {/* SECTION 4: DOMAIN SHIELD (WITH CUSTOM CHECK BUTTON & PROVEN VERIFICATION) */}
+              {activeTab === 'domains' && (
+                <div className="space-y-6 max-w-4xl mx-auto">
+                  
+                  {/* Back Button */}
+                  <div className="flex items-center justify-between pb-3 border-b border-surface-border">
+                    <button
+                      onClick={navigateBackToFeed}
+                      className="inline-flex items-center space-x-2 text-xs font-semibold text-gold hover:underline"
+                    >
+                      <IconArrowLeft className="w-4 h-4" />
+                      <span>← Back to Threat Feed</span>
+                    </button>
+                    <span className="text-xs text-text-secondary uppercase">Domain Protection</span>
+                  </div>
+
+                  <div className={`bg-surface panel-border ${isMobileLayout ? 'p-4 space-y-1.5' : 'p-6 space-y-2'} rounded-lg`}>
+                    <h2 className={`${isMobileLayout ? 'text-lg' : 'text-2xl sm:text-3xl'} font-serif font-bold text-white`}>Domain Shield & DNS Telemetry</h2>
+                    <p className={`${isMobileLayout ? 'text-xs' : 'text-xs sm:text-sm'} text-text-secondary`}>
+                      Drop any website link or domain below and run a custom check to verify brand ownership and neutralize lookalike clones.
+                    </p>
+                  </div>
+
+                  {/* Verification Status Card */}
+                  <div className={`bg-surface panel-border ${isMobileLayout ? 'p-4 space-y-4' : 'p-6 space-y-6'} rounded-lg`}>
+                    
+                    {/* Active Verified Host Display */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-canvas border border-surface-border rounded-lg gap-3">
+                      <div>
+                        <span className="text-[10px] text-text-secondary uppercase font-semibold block">Protected Primary Host</span>
+                        <span className={`${isMobileLayout ? 'text-base' : 'text-xl'} font-serif font-bold text-white tracking-wide`}>{customDomain}</span>
+                        <span className="text-[10px] text-text-secondary block mt-0.5">Last Verified: {domainVerifiedTimestamp}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="px-3 py-1 rounded bg-risk-low/20 text-emerald-400 border border-risk-low/40 text-[11px] font-bold uppercase tracking-wider flex items-center space-x-1.5">
+                          <IconCheck className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>{domainCheckStatus}</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleResetDomainLink}
+                          className="px-2.5 py-1 rounded bg-surface hover:bg-surface-raised border border-surface-border text-gold text-[10px] font-semibold tracking-wider uppercase cursor-pointer transition-colors"
+                          title="Reset domain link back to default (apexpay.com)"
+                        >
+                          Reset Link
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Input Field for Dropping Domain Links with Inline Reset */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-[10px] uppercase text-text-secondary font-semibold">
+                          Drop Website Link or Domain to Check:
+                        </label>
+                        {domainInput && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDomainInput("");
+                              showToast("Input link cleared");
+                            }}
+                            className="text-[10px] text-gold hover:underline cursor-pointer flex items-center space-x-1"
+                          >
+                            <IconX className="w-3 h-3" />
+                            <span>Clear Input</span>
+                          </button>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <IconGlobe className="w-4 h-4 absolute left-3 top-2.5 text-text-secondary" />
+                        <input
+                          type="text"
+                          placeholder="e.g. https://mybrand.com or security.apexpay.com"
+                          value={domainInput}
+                          onChange={(e) => setDomainInput(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') handleCustomDomainCheck(domainInput); }}
+                          className={`w-full bg-canvas border border-surface-border pl-10 pr-10 ${isMobileLayout ? 'py-2 text-xs' : 'py-2.5 text-sm'} rounded text-white focus:outline-none focus:border-gold font-sans`}
+                        />
+                        {domainInput && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDomainInput("");
+                              showToast("Input link cleared");
+                            }}
+                            className="absolute right-3 top-2.5 text-text-secondary hover:text-white cursor-pointer"
+                            title="Reset / Clear link"
+                          >
+                            <IconX className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Quick Sample Links for 1-Click Verification */}
+                      <div className="flex items-center flex-wrap gap-1.5 text-xs pt-0.5">
+                        <span className="text-[10px] text-text-secondary">Quick Samples:</span>
+                        {["apexpay.com", "solarahealth.org", "vaultpay.io"].map(sample => (
+                          <button
+                            key={sample}
+                            type="button"
+                            onClick={() => {
+                              setDomainInput(sample);
+                              handleCustomDomainCheck(sample);
+                            }}
+                            className="px-2 py-0.5 rounded bg-surface-raised hover:bg-canvas border border-surface-border text-text-secondary hover:text-white text-[10px] cursor-pointer"
+                          >
+                            {sample}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Dedicated Action Buttons: Check Domain + Reset Link */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                      <button
+                        onClick={() => handleCustomDomainCheck(domainInput)}
+                        disabled={isCheckingDomain}
+                        className={`w-full ${isMobileLayout ? 'px-4 py-2 text-[11px]' : 'px-6 py-2.5 text-xs'} rounded bg-gold hover:bg-gold-light text-black font-sans font-semibold tracking-wider uppercase transition-all shadow-sm flex items-center justify-center space-x-2 cursor-pointer`}
+                      >
+                        <IconShield className="w-3.5 h-3.5 text-black" />
+                        <span>{isCheckingDomain ? "Querying DNS & Authorizing..." : "Run Custom Domain Check"}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleResetDomainLink}
+                        className={`w-full ${isMobileLayout ? 'px-4 py-2 text-[11px]' : 'px-6 py-2.5 text-xs'} rounded bg-surface hover:bg-surface-raised text-text-primary border border-surface-border font-sans font-semibold tracking-wider uppercase transition-all shadow-sm flex items-center justify-center space-x-2 cursor-pointer`}
+                      >
+                        <IconX className="w-3.5 h-3.5 text-gold" />
+                        <span>Reset Link to Default Host</span>
+                      </button>
+                    </div>
+
+                    {/* Verified DNS Records Table */}
+                    <div className="space-y-1.5 pt-2 border-t border-surface-border">
+                      <span className="text-[10px] uppercase text-text-secondary font-semibold block">
+                        Verified DNS Authentication Records:
+                      </span>
+                      <div className="border border-surface-border rounded overflow-hidden">
+                        <table className="w-full text-left text-[11px]">
+                          <thead className="bg-canvas border-b border-surface-border text-text-secondary uppercase font-semibold text-[10px]">
+                            <tr>
+                              <th className="py-2.5 px-3">Record</th>
+                              <th className="py-2.5 px-3">Hostname</th>
+                              <th className="py-2.5 px-3">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-surface-border">
+                            {dnsRecords.map((r, i) => (
+                              <tr key={i}>
+                                <td className="py-2.5 px-3 font-bold text-gold">{r.type}</td>
+                                <td className="py-2.5 px-3 text-white truncate max-w-xs">{r.host}</td>
+                                <td className="py-2.5 px-3 text-risk-low font-bold flex items-center space-x-1">
+                                  <IconCheck className="w-3 h-3 text-risk-low" />
+                                  <span>{r.status}</span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+              )}
+
+              {/* SECTION 5: CLIENT REVIEWS (SCALED FOR MOBILE) */}
+              {activeTab === 'reviews' && (
+                <div className="space-y-4 sm:space-y-6 max-w-5xl mx-auto">
+                  
+                  {/* Back Button */}
+                  <div className="flex items-center justify-between pb-2 border-b border-surface-border">
+                    <button
+                      onClick={navigateBackToFeed}
+                      className="inline-flex items-center space-x-1.5 text-xs font-semibold text-gold hover:underline cursor-pointer"
+                    >
+                      <IconArrowLeft className="w-3.5 h-3.5" />
+                      <span>← Back to Threat Feed</span>
+                    </button>
+                    <span className="text-[10px] text-text-secondary uppercase">Executive Reviews</span>
+                  </div>
+
+                  <div className={`bg-surface panel-border ${isMobileLayout ? 'p-4 space-y-1.5' : 'p-6 space-y-2'} rounded-lg`}>
+                    <h2 className={`${isMobileLayout ? 'text-lg' : 'text-2xl sm:text-3xl'} font-serif font-bold text-white`}>Trusted by Global Brand Leaders</h2>
+                    <p className={`${isMobileLayout ? 'text-xs' : 'text-xs sm:text-sm'} text-text-secondary`}>
+                      Industry CISOs rely on DoppelGuard for zero-day impersonation defense and takedown enforcement.
+                    </p>
+                  </div>
+
+                  {/* 3 Real Testimonial Cards */}
+                  <div className={`grid ${isMobileLayout ? 'grid-cols-1 gap-3' : 'grid-cols-1 md:grid-cols-3 gap-6'}`}>
+                    {TESTIMONIALS.map((t, i) => (
+                      <div key={i} className={`bg-surface panel-border ${isMobileLayout ? 'p-4 space-y-3' : 'p-6 space-y-4'} rounded-lg flex flex-col justify-between`}>
+                        <p className={`${isMobileLayout ? 'text-[11px]' : 'text-xs'} text-text-secondary leading-relaxed italic`}>
+                          "{t.quote}"
+                        </p>
+                        <div className="flex items-center space-x-2.5 pt-3 border-t border-surface-border">
+                          <img 
+                            src={t.photo} 
+                            alt={t.name} 
+                            className="w-10 h-10 rounded-full object-cover border border-gold/40 flex-shrink-0" 
+                          />
+                          <div>
+                            <h4 className="font-bold text-white text-xs">{t.name}</h4>
+                            <p className="text-[10px] text-text-secondary">{t.role}</p>
+                            <p className="text-[10px] text-gold font-semibold">{t.company}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* One Action Button */}
+                  <div className="text-center pt-2">
+                    <button
+                      onClick={navigateBackToFeed}
+                      className={`w-full sm:w-auto ${isMobileLayout ? 'px-4 py-2 text-[11px]' : 'px-6 py-2.5 text-xs'} rounded bg-gold hover:bg-gold-light text-black font-sans font-semibold tracking-wider uppercase transition-all shadow-sm inline-flex items-center justify-center space-x-2 cursor-pointer`}
+                    >
+                      <span>Return to Live Monitoring</span>
+                    </button>
+                  </div>
+
+                </div>
+              )}
+
+            </main>
+
+            {/* INCIDENT DETAIL MODAL */}
+            {selectedIncident && (
+              <div onClick={(e) => { if (e.target === e.currentTarget) setSelectedIncident(null); }} className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+                <div className="bg-surface panel-border max-w-2xl w-full rounded-xl shadow-2xl p-6 sm:p-8 space-y-5 max-h-[92vh] overflow-y-auto border border-gold/40">
+                  
+                  <div className="flex items-center justify-between pb-3 border-b border-surface-border">
+                    <button
+                      onClick={() => setSelectedIncident(null)}
+                      className="text-xs text-gold hover:underline font-semibold flex items-center space-x-1 cursor-pointer"
+                    >
+                      <IconArrowLeft className="w-4 h-4" />
+                      <span>Back to Feed</span>
+                    </button>
+                    <button onClick={() => setSelectedIncident(null)} className="text-text-secondary hover:text-white cursor-pointer">
+                      <IconX className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center space-x-4">
+                    <img src={selectedIncident.realPhoto} alt={selectedIncident.assetName} className="w-16 h-16 rounded object-cover border border-surface-border flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-bold text-gold uppercase">{selectedIncident.id}</span>
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-risk-critical/20 text-red-400">
+                          Risk {selectedIncident.riskScore}/100
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-serif font-bold text-white truncate">{selectedIncident.assetName}</h3>
+                      <p className="text-xs text-text-secondary">{selectedIncident.platform} • {selectedIncident.detectionType}</p>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 bg-canvas border border-surface-border rounded space-y-1.5">
+                    <span className="text-xs uppercase text-gold font-semibold block">Incident Summary</span>
+                    <p className="text-xs text-text-secondary leading-relaxed">{selectedIncident.evidence.plainExplanation}</p>
+                  </div>
+
+                  {/* Explainable AI Risk Factor Weights (Weights + Impact Breakdown) */}
+                  <div className="space-y-2">
+                    <span className="text-xs uppercase text-gold font-semibold block">Explainable AI Risk Breakdown (Signals & Weights)</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                      <div className="p-3 bg-canvas border border-surface-border rounded space-y-1">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-white font-semibold">Vector Logo Distance</span>
+                          <span className="text-gold font-mono font-bold">Weight: 35% (+33 pts)</span>
+                        </div>
+                        <p className="text-[11px] text-text-secondary">
+                          Visual similarity: <span className="text-white font-bold">{selectedIncident.evidence.logoSimilarity}%</span> match against registered trademark vectors.
+                        </p>
+                      </div>
+
+                      <div className="p-3 bg-canvas border border-surface-border rounded space-y-1">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-white font-semibold">Account Velocity & Age</span>
+                          <span className="text-gold font-mono font-bold">Weight: 25% (+24 pts)</span>
+                        </div>
+                        <p className="text-[11px] text-text-secondary">
+                          Active age: <span className="text-white font-bold">{selectedIncident.evidence.accountAgeDays} Days</span>. High-velocity account creation anomaly.
+                        </p>
+                      </div>
+
+                      <div className="p-3 bg-canvas border border-surface-border rounded space-y-1">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-white font-semibold">Follower Ratio Anomaly</span>
+                          <span className="text-gold font-mono font-bold">Weight: 20% (+18 pts)</span>
+                        </div>
+                        <p className="text-[11px] text-text-secondary">
+                          Profile metrics: <span className="text-white font-bold">{selectedIncident.evidence.followerRatio}</span>. Typical bot signature.
+                        </p>
+                      </div>
+
+                      <div className="p-3 bg-canvas border border-surface-border rounded space-y-1">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-white font-semibold">Deceptive Lexical Triggers</span>
+                          <span className="text-gold font-mono font-bold">Weight: 20% (+17 pts)</span>
+                        </div>
+                        <p className="text-[11px] text-text-secondary truncate">
+                          Keywords: <span className="text-white font-bold">{selectedIncident.evidence.flaggedStrings.join(", ")}</span>.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Recommended Response Actions Grid */}
+                  <div className="p-3.5 bg-canvas border border-surface-border rounded space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs uppercase text-gold font-semibold">Recommended Response Actions</span>
+                      <span className="text-[10px] text-emerald-400 font-mono">Status: {selectedIncident.status}</span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                      <div className="p-2 rounded bg-surface border border-surface-border text-center">
+                        <span className="text-gold font-bold block">1. Abuse Report</span>
+                        <span className="text-[10px] text-text-secondary">Platform API</span>
+                      </div>
+                      <div className="p-2 rounded bg-surface border border-surface-border text-center">
+                        <span className="text-gold font-bold block">2. DMCA Demand</span>
+                        <span className="text-[10px] text-text-secondary">Legal Notice</span>
+                      </div>
+                      <div className="p-2 rounded bg-surface border border-surface-border text-center">
+                        <span className="text-gold font-bold block">3. IOC Telemetry</span>
+                        <span className="text-[10px] text-text-secondary">Surveillance</span>
+                      </div>
+                      <div className="p-2 rounded bg-surface border border-surface-border text-center">
+                        <span className="text-gold font-bold block">4. Injunction</span>
+                        <span className="text-[10px] text-text-secondary">Legal Counsel</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Triage Buttons */}
+                  <div className="flex items-center flex-wrap gap-2 pt-1 border-t border-surface-border">
+                    <span className="text-[10px] uppercase text-text-secondary font-semibold">Update Status:</span>
+                    <button
+                      onClick={() => updateIncidentStatus(selectedIncident.id, "Confirmed Threat")}
+                      className="px-2.5 py-1 rounded bg-risk-critical/20 text-red-300 hover:bg-risk-critical/30 border border-risk-critical/40 text-xs font-semibold cursor-pointer"
+                    >
+                      Confirm Threat
+                    </button>
+                    <button
+                      onClick={() => updateIncidentStatus(selectedIncident.id, "False Positive")}
+                      className="px-2.5 py-1 rounded bg-surface hover:bg-surface-raised border border-surface-border text-text-secondary hover:text-white text-xs font-semibold cursor-pointer"
+                    >
+                      False Positive
+                    </button>
+                    <button
+                      onClick={() => updateIncidentStatus(selectedIncident.id, "Resolved")}
+                      className="px-2.5 py-1 rounded bg-risk-low/20 text-emerald-300 hover:bg-risk-low/30 border border-risk-low/40 text-xs font-semibold cursor-pointer"
+                    >
+                      Resolved
+                    </button>
+                  </div>
+
+                  {/* Primary Action Button */}
+                  <button
+                    onClick={() => {
+                      updateIncidentStatus(selectedIncident.id, "Under Takedown");
+                      handleGenerateTakedown(selectedIncident);
+                    }}
+                    className="w-full px-6 py-2.5 rounded bg-gold hover:bg-gold-light text-black font-sans font-semibold text-xs tracking-wider uppercase transition-all shadow-sm flex items-center justify-center space-x-2 cursor-pointer"
+                  >
+                    <IconFileText className="w-4 h-4 text-black" />
+                    <span>Issue Formal Statutory Takedown Demand</span>
+                  </button>
+
+                </div>
+              </div>
+            )}
+
+            {/* AUTONOMOUS AI ACTION EXECUTION MODAL */}
+            {aiActionModal && (
+              <div onClick={(e) => { if (e.target === e.currentTarget && aiActionModal.completed) setAiActionModal(null); }} className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 backdrop-blur-sm">
+                <div className="bg-surface panel-border max-w-lg w-full rounded-lg shadow-2xl p-6 space-y-4 border border-gold/50">
+                  <div className="flex items-center justify-between pb-3 border-b border-surface-border">
+                    <div className="flex items-center space-x-2">
+                      <IconZap className="w-5 h-5 text-gold" />
+                      <span className="text-sm font-serif font-bold text-white uppercase">AI Autonomous Remediation</span>
+                    </div>
+                    {aiActionModal.completed && (
+                      <button onClick={() => setAiActionModal(null)} className="text-text-secondary hover:text-white cursor-pointer">
+                        <IconX className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="p-3 bg-canvas border border-surface-border rounded-lg space-y-1 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-white">{aiActionModal.incident.assetName}</span>
+                      <span className="text-gold font-mono">{aiActionModal.incident.platform}</span>
+                    </div>
+                    <p className="text-text-secondary text-[11px]">{aiActionModal.rec.action}</p>
+                  </div>
+
+                  {/* Step Execution Terminal */}
+                  <div className="bg-black/90 p-3.5 rounded border border-surface-border font-mono text-[11px] space-y-2">
+                    <div className="flex items-center space-x-2 text-text-secondary">
+                      <span className="text-gold">Docket Reference:</span>
+                      <span className="text-white font-bold">#{aiActionModal.docketId}</span>
+                    </div>
+
+                    <div className="space-y-1.5 pt-1">
+                      <div className={`flex items-center space-x-2 ${aiActionModal.step >= 1 ? 'text-white' : 'text-text-secondary/50'}`}>
+                        {aiActionModal.step > 1 ? (
+                          <IconCheck className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : (
+                          <span className="w-3.5 h-3.5 rounded-full border border-gold animate-spin block"></span>
+                        )}
+                        <span>Phase 1: Extracting SHA-256 asset hash & WHOIS telemetry</span>
+                      </div>
+
+                      <div className={`flex items-center space-x-2 ${aiActionModal.step >= 2 ? 'text-white' : 'text-text-secondary/50'}`}>
+                        {aiActionModal.step > 2 ? (
+                          <IconCheck className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : aiActionModal.step === 2 ? (
+                          <span className="w-3.5 h-3.5 rounded-full border border-gold animate-spin block"></span>
+                        ) : (
+                          <span className="w-3.5 h-3.5 rounded-full border border-surface-border block"></span>
+                        )}
+                        <span>Phase 2: Compiling Statutory DMCA § 512(c)(3) legal demand</span>
+                      </div>
+
+                      <div className={`flex items-center space-x-2 ${aiActionModal.step >= 3 ? 'text-white' : 'text-text-secondary/50'}`}>
+                        {aiActionModal.step > 3 ? (
+                          <IconCheck className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : aiActionModal.step === 3 ? (
+                          <span className="w-3.5 h-3.5 rounded-full border border-gold animate-spin block"></span>
+                        ) : (
+                          <span className="w-3.5 h-3.5 rounded-full border border-surface-border block"></span>
+                        )}
+                        <span>Phase 3: Transmitting webhook to {aiActionModal.incident.platform} Abuse Desk</span>
+                      </div>
+
+                      <div className={`flex items-center space-x-2 ${aiActionModal.step >= 4 ? 'text-emerald-400 font-bold' : 'text-text-secondary/50'}`}>
+                        {aiActionModal.step >= 4 ? (
+                          <IconCheck className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : (
+                          <span className="w-3.5 h-3.5 rounded-full border border-surface-border block"></span>
+                        )}
+                        <span>Phase 4: Status updated to 'Under Takedown' - Telemetry Active</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {aiActionModal.completed ? (
+                    <div className="flex items-center space-x-3 pt-2">
+                      <button
+                        onClick={() => {
+                          const inc = aiActionModal.incident;
+                          setAiActionModal(null);
+                          handleGenerateTakedown(inc);
+                        }}
+                        className="flex-1 py-2 px-3 rounded bg-surface hover:bg-surface-raised border border-gold/40 text-gold font-semibold text-xs transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
+                      >
+                        <IconFileText className="w-3.5 h-3.5 text-gold" />
+                        <span>View Generated Notice</span>
+                      </button>
+                      <button
+                        onClick={() => setAiActionModal(null)}
+                        className="flex-1 py-2 px-3 rounded bg-gold hover:bg-gold-light text-black font-semibold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                      >
+                        Done & Return
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="text-center py-2 text-xs text-text-secondary">
+                      <span className="inline-block animate-pulse text-gold font-semibold">Autonomous AI Agent Dispathing Payload...</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* BATCH AUTONOMOUS AI TRIAGE MODAL */}
+            {aiBatchModal && (
+              <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 backdrop-blur-sm">
+                <div className="bg-surface panel-border max-w-md w-full rounded-lg shadow-2xl p-6 space-y-4 border border-gold/50">
+                  <div className="flex items-center space-x-2 pb-3 border-b border-surface-border">
+                    <IconZap className="w-5 h-5 text-gold" />
+                    <span className="text-sm font-serif font-bold text-white uppercase">Batch Autonomous AI Triage</span>
+                  </div>
+
+                  <p className="text-xs text-text-secondary leading-relaxed">
+                    The autonomous AI agent is processing all ingested threat vectors, correlating signal weights, and dispatching automated statutory takedowns.
+                  </p>
+
+                  <div className="space-y-2 py-2">
+                    <div className="flex justify-between text-xs font-mono">
+                      <span className="text-white">Processing Telemetry...</span>
+                      <span className="text-gold font-bold">{aiBatchModal.completed ? '100%' : aiBatchModal.step === 2 ? '65%' : '25%'}</span>
+                    </div>
+                    <div className="w-full bg-canvas h-2 rounded-full overflow-hidden border border-surface-border">
+                      <div 
+                        className="bg-gold h-full rounded-full transition-all duration-500" 
+                        style={{ width: aiBatchModal.completed ? '100%' : aiBatchModal.step === 2 ? '65%' : '25%' }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  {aiBatchModal.completed ? (
+                    <div className="space-y-3 pt-2">
+                      <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded text-xs text-emerald-300">
+                        ✅ Autonomous Triage Complete: All Critical threats auto-dispatched to Platform Abuse Desks with official DMCA dossiers.
+                      </div>
+                      <button
+                        onClick={() => setAiBatchModal(null)}
+                        className="w-full py-2 rounded bg-gold hover:bg-gold-light text-black font-semibold text-xs uppercase tracking-wider cursor-pointer"
+                      >
+                        Return to Triage Queue
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="text-center text-xs text-text-secondary font-mono animate-pulse">
+                      Analyzing multi-modal neural weights & synthesizing DMCA notices...
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* AI COPILOT INSIGHT MODAL */}
+            {aiCopilotModal && (
+              <div onClick={(e) => { if (e.target === e.currentTarget) setAiCopilotModal(null); }} className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 backdrop-blur-sm">
+                <div className="bg-surface panel-border max-w-lg w-full rounded-lg shadow-2xl p-6 space-y-4 border border-gold/40">
+                  <div className="flex items-center justify-between pb-3 border-b border-surface-border">
+                    <div className="flex items-center space-x-2">
+                      <IconCpu className="w-4 h-4 text-gold" />
+                      <span className="text-xs font-mono font-bold text-gold uppercase">{aiCopilotModal.category}</span>
+                    </div>
+                    <button onClick={() => setAiCopilotModal(null)} className="text-text-secondary hover:text-white cursor-pointer">
+                      <IconX className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <h3 className="text-sm font-serif font-bold text-white">{aiCopilotModal.title}</h3>
+                  <div className="p-3.5 bg-canvas border border-surface-border rounded-lg text-xs text-text-secondary leading-relaxed whitespace-pre-line font-sans">
+                    {aiCopilotModal.answer}
+                  </div>
+
+                  <div className="flex items-center justify-end space-x-3 pt-2">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(aiCopilotModal.answer);
+                        showToast("Copilot response copied to clipboard");
+                      }}
+                      className="px-3 py-1.5 rounded bg-surface hover:bg-surface-raised border border-surface-border text-xs text-gold font-semibold cursor-pointer"
+                    >
+                      Copy Response
+                    </button>
+                    <button
+                      onClick={() => setAiCopilotModal(null)}
+                      className="px-4 py-1.5 rounded bg-gold hover:bg-gold-light text-black font-semibold text-xs cursor-pointer"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAKEDOWN EXPORT MODAL */}
+            {showTakedownModal && (
+              <div onClick={(e) => { if (e.target === e.currentTarget) setShowTakedownModal(false); }} className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+                <div className="bg-surface panel-border max-w-xl w-full rounded-lg shadow-2xl p-6 space-y-4">
+                  
+                  <div className="flex items-center justify-between pb-3 border-b border-surface-border">
+                    <span className="text-xs font-serif font-bold text-white uppercase">Formal Infringement Notice</span>
+                    <button onClick={() => setShowTakedownModal(false)} className="text-text-secondary hover:text-white">
+                      <IconX className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <textarea
+                    readOnly
+                    value={takedownContent}
+                    rows={10}
+                    className="w-full bg-canvas text-text-secondary text-xs p-3 rounded border border-surface-border font-mono resize-none leading-relaxed"
+                  />
+
+                  {/* One Action Button */}
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(takedownContent);
+                      showToast("Notice text copied to clipboard");
+                    }}
+                    className="w-full px-6 py-2.5 rounded bg-gold hover:bg-gold-light text-black font-sans font-semibold text-xs tracking-wider uppercase transition-all shadow-sm flex items-center justify-center space-x-2"
+                  >
+                    <IconCopy className="w-4 h-4 text-black" />
+                    <span>Copy Takedown Notice</span>
+                  </button>
+
+                </div>
+              </div>
+            )}
+
+            {/* JUDGE DEMO SCRIPT & PITCH PACK MODAL */}
+            <PitchPackModal 
+              isOpen={showPitchModal} 
+              onClose={() => setShowPitchModal(false)} 
+            />
+
+            {/* FOOTER */}
+            <footer className="border-t border-surface-border bg-surface py-6 mt-8">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-secondary">
+                <div className="flex items-center space-x-3">
+                  <img src="./doppelguard-logo.jpg" alt="DoppelGuard" className="h-7 w-auto rounded object-contain border border-gold/30" />
+                  <div>
+                    <span className="font-serif font-bold text-white block">DOPPELGUARD DIGITAL RISK PROTECTION</span>
+                    <span className="text-[10px] text-gold font-sans block">Built by Fantastic Five for Hackathon Prototype</span>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 text-[11px] text-right sm:text-left gap-1">
+                  <span className="text-text-secondary">All threat telemetry simulated for live evaluation</span>
+                  <span className="text-emerald-400 font-semibold flex items-center justify-end sm:justify-start space-x-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>SOC Engine: Active</span>
+                  </span>
+                </div>
+              </div>
+            </footer>
+          </div>
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

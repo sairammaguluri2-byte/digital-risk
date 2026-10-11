@@ -1,0 +1,19 @@
+{
+  "appName": "DOPPELGUARD",
+  "tagline": "Digital Risk Protection Platform",
+  "targetBrandDefault": "ApexPay Corporate",
+  "domainDefault": "apexpay.com",
+  "version": "4.8.0-SOC",
+  "build": "Hackathon MVP Final",
+  "team": "Fantastic Five",
+  "theme": {
+    "obsidianBlack": "#050608",
+    "champagneGold": "#C5A059",
+    "goldLight": "#E6CA85",
+    "surface": "rgba(13, 14, 18, 0.72)",
+    "typography": [
+      "Cinzel",
+      "Plus Jakarta Sans"
+    ]
+  }
+}
